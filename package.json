@@ -1,0 +1,20 @@
+{
+  "name": "aluuka",
+  "version": "1.0.0",
+  "description": "This is a template repository for running [MySQL](https://www.mysql.com) on Render.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://%3C4e645e8c5cf4298d2afaacad3ff62a689afd242c%3E@github.com/Challaris/aluuka-webflow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Challaris/aluuka-webflow/issues"
+  },
+  "homepage": "https://github.com/Challaris/aluuka-webflow#readme"
+}
