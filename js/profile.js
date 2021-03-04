@@ -22,7 +22,10 @@ function runOnLoad() {
     });
   });
 
-  const token = localStorage.getItem("token");
+  let token = localStorage.getItem("token")
+  // REMOVE PRECEEDING & TRAILING QUOTE SYMBOLS
+  token = token.substring(1, token.length - 1);
+
   let pictureURL = "";
 
   deleteBtn.addEventListener("click", e => {
@@ -67,7 +70,7 @@ function runOnLoad() {
       contentType: "application/json",
       type: "POST",
       headers: {
-        authorization: `Bearer ${JSON.parse(token)} `
+        authorization: `Bearer ${token} `
       },
 
       data: JSON.stringify({
@@ -80,7 +83,6 @@ function runOnLoad() {
         address: "${address.value}"
         phone: "${phone.value}"
         email: "${email.value}"
-        pictureURL: "${pictureURL}"
         notificationChannel: [${notificationChannel}]
       ) {
         success
