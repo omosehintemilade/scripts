@@ -159,7 +159,7 @@
         }
         // REMOVE PRECEEDING & TRAILING QUOTE SYMBOLS
         token = token.substring(1, token.length - 1);
-        console.log(`Bearer ` + JSON.parse(token));
+        console.log(`Bearer ` + token);
         // Care Giver Role
         $(".onboarding_role_caregiver").click(function (event) {
           event.preventDefault();
@@ -230,7 +230,7 @@
             url: "https://aluuka-backend.herokuapp.com",
             contentType: "application/json",
             type: "POST",
-            headers: { authorization: `Bearer ${JSON.parse(token)}` },
+            headers: { authorization: `Bearer ${token}` },
             data: JSON.stringify({
               query: `mutation {
                                         onboardingChooseRole(
@@ -293,7 +293,7 @@
             url: "https://aluuka-backend.herokuapp.com",
             contentType: "application/json",
             type: "POST",
-            headers: { authorization: `Bearer ${JSON.parse(token)}` },
+            headers: { authorization: `Bearer ${token}` },
             data: JSON.stringify({
               query: `mutation {
                                         onboardingChooseRole(
@@ -352,7 +352,7 @@
             url: "https://aluuka-backend.herokuapp.com",
             contentType: "application/json",
             type: "POST",
-            headers: { authorization: `Bearer ${JSON.parse(token)}` },
+            headers: { authorization: `Bearer ${token}` },
             data: JSON.stringify({
               query: `mutation {
                                         onboardingChooseRole(
