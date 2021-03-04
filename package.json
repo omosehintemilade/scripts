@@ -2,7 +2,7 @@
   "name": "aluuka",
   "version": "1.0.0",
   "description": "This is a template repository for running [MySQL](https://www.mysql.com) on Render.",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
