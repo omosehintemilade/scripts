@@ -1,0 +1,32 @@
+
+
+onboardingCompletePayoutInformation(
+payoutMethod: Bank
+payoutAccountNumberOrEmail: "2082847359"
+payoutSwiftCode: "20928993"
+),{
+  success
+  message
+  data
+  returnStatus
+  token
+}
+
+mutation{
+  createPatient(
+fullName: "Patient"
+dob: "Fri Jul 02 1993 01:00:00 GMT+0100 (West Africa Standard Time)"
+gender: "male"
+country: "Nigeria"
+address: "10 anjs hjkbsa"
+phone: "09058556969"
+email: "jonsaixx852@gmail.com"
+acceptLegalConsent: true
+  ){
+  success
+  message
+  returnStatus
+  token
+  data
+  }
+}
