@@ -53,7 +53,7 @@ $(document).ready(function () {
     console.log("loading....");
 
     $.ajax({
-      url: "https://aluuka-backend.herokuapp.com",
+      url: CONSTANTS.baseUrl,
       contentType: "application/json",
       type: "POST",
       data: JSON.stringify({
