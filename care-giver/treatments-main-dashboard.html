@@ -575,9 +575,10 @@
           }),
           success: function (result) {
             treatment_list = result.data.listTreatments.data;
-            let patient_list = result.data.listPatients.data;
+            // reverse treatment_list
+            treatment_list.reverse();
 
-            console.log("Here", treatment_list);
+            let patient_list = result.data.listPatients.data;
 
             // APPEND PATIENT LIST TO TEMPLATE
             $.map(patient_list, function (patient, index) {
@@ -603,8 +604,7 @@
             $(".treat_num").html(`${treatment_list.length + 1}`);
             $(".treatment_list_table").after(
               $.map(treatment_list, function (data) {
-                const date_treat = new Date(data.createdAt).toLocaleDateString("en-US", dateoptions);
-                console.log(date_treat);
+                const date_treat = new Date(Number(data.createdAt)).toLocaleDateString("en-US", dateoptions);
                 var feenum = data.grandTotal - data.subTotal;
                 var nfee = feenum.toFixed(2);
                 return `
