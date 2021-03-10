@@ -107,16 +107,17 @@
         <div class="notification-popup-modal-block-elements">
           <div class="notification-popup-modal-elements-top-block">
             <div class="div-top-block">
-              <div class="text-bold">Payment Complete</div>
+              <div class="text-bold">Payment Processing</div>
             </div>
             <div id="w-node-fa9bff8b-c301-ec58-aca7-0ede9014eeaf-04900c6a" data-w-id="fa9bff8b-c301-ec58-aca7-0ede9014eeaf" class="text-cancel"><span></span></div>
           </div>
-          <img src="../images/Vector.svg" loading="lazy" alt="" />
-          <div class="notification-popup-plain-text">Your payment was completed, you will be notified when your appointment is approved</div>
-          <a href="../care-giver/treatments-main-dashboard.html" class="new-treatment-popup-close-button w-button">Close</a>
+          <img src="../images/wait.svg" loading="lazy" alt="" />
+          <div class="notification-popup-plain-text">Hold on while we redirect you to a secured payment link...</div>
+          <a href="../care-giver/treatments-main-dashboard.html" class="new-treatment-popup-close-button w-button" style="padding: 10px; margin-top: 10px">Close</a>
         </div>
       </div>
     </div>
+
     <div class="treatment-payment-3">
       <div class="treatment-payment-3-container w-container">
         <div class="sidebar">
@@ -424,16 +425,15 @@
           headers: { authorization: `Bearer ${JSON.parse(token)}` },
           data: JSON.stringify({
             query: `query {
-                                            getTreatmentById(
-                                                id: "${treatment_id}"
-                                            ) {
-                                            			id
-    																							patientId
-																									subTotal
-    																							grandTotal
-                                               }
-                                        }
-                                    `,
+                      getTreatmentById(
+                          id: "${treatment_id}"
+                      ) {
+                            id
+                            patientId
+                            subTotal
+                            grandTotal
+                          }
+                  }`,
           }),
           success: function (result) {
             var treatment_data = result.data.getTreatmentById;
@@ -495,8 +495,8 @@
             }, 2000);
             return false;
           }
-          $(".notification-popup-model-block").css("display", "block");
-          alert(`Yeah, man ${paymentType}`);
+          $(".notification-popup-model-block").show();
+          //alert(`Yeah, man ${paymentType}`);
         });
       });
     </script>

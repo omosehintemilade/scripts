@@ -250,7 +250,7 @@
             </div>
             <div class="treatments-summary-tab-3-div">
               <div class="treatments-summary-tab-3-div-label-small">Payout</div>
-              <div class="treatments-summary-tab-3-div-label-big">$0</div>
+              <div class="treatments-summary-tab-3-div-label-big total-payout">$0</div>
               <div data-hover="" data-delay="0" class="treatments-summary-tab-3-div-dropdown w-dropdown">
                 <div class="treatments-summary-tab-3-dropdown-toggle-3 w-dropdown-toggle">
                   <div class="w-icon-dropdown-toggle"></div>
@@ -602,11 +602,15 @@
               return false;
             }
             $(".treat_num").html(`${treatment_list.length + 1}`);
+            //Total Fees
+            let TOTAL_PAYOUT = 0;
             $(".treatment_list_table").after(
               $.map(treatment_list, function (data) {
                 const date_treat = new Date(Number(data.createdAt)).toLocaleDateString("en-US", dateoptions);
                 var feenum = data.grandTotal - data.subTotal;
-                var nfee = feenum.toFixed(2);
+                var nfee = data.grandTotal.toFixed(2);
+                //UPDATE TOTAL FEES
+                TOTAL_PAYOUT += data.grandTotal;
                 return `
                     	<div class="treatments-dashboard-table-row-5">
                         <div class="treatments-dashboard-table-row-5-block-1">
@@ -657,13 +661,15 @@
                     `;
               })
             );
+
+            $(".total-payout").text(`$${TOTAL_PAYOUT.toFixed(2)}`);
             $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
               var className = $(this).attr("class");
               var keyName = $(this).attr("key");
               alert(`${className} ${keyName}`);
               $(`${keyName}-show`).addClass("w--open");
             });
-            console.log(JSON.stringify(treatment_list));
+            //console.log(JSON.stringify(treatment_list));
           },
           error: function (err) {
             console.log(err);
