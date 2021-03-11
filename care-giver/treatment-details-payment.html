@@ -14,7 +14,11 @@
     <link href="../css/webflow-conversion-a19937da9b1f54730ca3.webflow.css" rel="stylesheet" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
     <script type="text/javascript">
-      WebFont.load({ google: { families: ["Mulish:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"] } });
+      WebFont.load({
+        google: {
+          families: ["Mulish:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"],
+        },
+      });
     </script>
     <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
     <script type="text/javascript">
@@ -31,10 +35,12 @@
         border-color: #3e634f !important;
         transition: all ease-in-out 0.6s;
       }
+
       .paypal-block:hover {
         border-color: #3e634f !important;
         transition: all ease-in-out 0.6s;
       }
+
       .visacard-block:hover {
         border: 2px solid #3e634f !important;
         border-color: #3e634f !important;
@@ -42,6 +48,7 @@
       }
     </style>
   </head>
+
   <body class="body-2">
     <div data-w-id="c30711d5-5116-4f71-12a1-0a4231601cf9" class="treatment-payment-add-payment-method-popup-modal">
       <div class="treatment-payment-add-payment-method-popup-element-block">
@@ -354,6 +361,7 @@
     ></script>
     <script src="../js/webflow.js" type="text/javascript"></script>
     <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
+    <script src="https://js.stripe.com/v3/"></script>
     <script type="application/javascript">
       $(document).ready(function () {
         $(".sign-out").click(function () {
@@ -375,7 +383,6 @@
         var paymentType = "";
         $(".visacard-block").click(function (event) {
           if (!stripeType) {
-            alert(paymentType);
             $(".paypal-block").removeClass("pay-select");
             $(".visacard-block").addClass("pay-select");
             stripeType = true;
@@ -403,6 +410,7 @@
             paymentType = "";
           }
         });
+
         function getUrlVars() {
           var vars = [],
             hash;
@@ -422,7 +430,9 @@
           url: CONSTANTS.baseUrl,
           contentType: "application/json",
           type: "POST",
-          headers: { authorization: `Bearer ${JSON.parse(token)}` },
+          headers: {
+            authorization: `Bearer ${JSON.parse(token)}`,
+          },
           data: JSON.stringify({
             query: `query {
                       getTreatmentById(
@@ -434,27 +444,29 @@
                             grandTotal
                           }
                   }`,
-          }),
-          success: function (result) {
-            var treatment_data = result.data.getTreatmentById;
-            var feenum = treatment_data.grandTotal - treatment_data.subTotal;
-            var aluuka_fee = feenum.toFixed(2);
-            $(".total_payment").html(`$${treatment_data.grandTotal.toFixed(2)}`);
-            $(".treat_payment").html(`$${treatment_data.subTotal.toFixed(2)}`);
-            $(".aluuka_payment").html(`$${aluuka_fee}`);
-          },
-          error: function (err) {
-            console.log(err);
-          },
-        });
-        // Treatment List
-        $.ajax({
-          url: CONSTANTS.baseUrl,
-          contentType: "application/json",
-          type: "POST",
-          headers: { authorization: `Bearer ${JSON.parse(token)}` },
-          data: JSON.stringify({
-            query: `query {
+        }),
+        success: function (result) {
+          var treatment_data = result.data.getTreatmentById;
+          var feenum = treatment_data.grandTotal - treatment_data.subTotal;
+          var aluuka_fee = feenum.toFixed(2);
+          $(".total_payment").html(`$${treatment_data.grandTotal.toFixed(2)}`);
+          $(".treat_payment").html(`$${treatment_data.subTotal.toFixed(2)}`);
+          $(".aluuka_payment").html(`$${aluuka_fee}`);
+        },
+        error: function (err) {
+          console.log(err);
+        },
+      });
+      // Treatment List
+      $.ajax({
+        url: CONSTANTS.baseUrl,
+        contentType: "application/json",
+        type: "POST",
+        headers: {
+          authorization: `Bearer ${JSON.parse(token)}`
+        },
+        data: JSON.stringify({
+          query: `query {
                                             getHealthcareProviderById(
                                                 id: "${hcp_id}"
                                             ) {
@@ -481,23 +493,170 @@
         //$(".notification-popup-model-block")
         $(".payment-method-pay-button").click(function (event) {
           if (paymentType === "") {
-            errorMessage.css("display", "block");
-            errorMessage.css("background", "#c62828");
-            errorMessage.html("Please select payment method...");
-            errorMessage.animate({ top: "30px" }, 900, "linear", function () {
-              console.log("All is cool");
-            });
-            errorMessage.animate({ top: "50px" }, 900, "linear", function () {
-              console.log("All is cool");
-            });
-            setTimeout(function () {
-              errorMessage.css("display", "none");
-            }, 2000);
-            return false;
+            return showErrorMessageOnScreen(errorMessage, "Please select payment method...");
           }
+
           $(".notification-popup-model-block").show();
+          if (paymentType === "Stripe") {
+            var treatment_id = getUrlVars()["treatment_id"];
+            var hcp_id = getUrlVars()["hcp_id"];
+            $.ajax({
+              url: CONSTANTS.baseUrl,
+              contentType: "application/json",
+              type: "POST",
+              headers: {
+                authorization: `Bearer ${JSON.parse(token)}`,
+              },
+              data: JSON.stringify({
+                query: `mutation {
+createStripePaymentSession(
+treatmentId: "${treatment_id}",
+healthcareProviderId: "${hcp_id}"
+) {
+sessionId
+}
+}
+`,
+              }),
+              success: function (result) {
+                window.stripe = Stripe(CONSTANTS.stripePublicKey);
+                if (result.data.createStripePaymentSession.sessionId) {
+                  stripe
+                    .redirectToCheckout({
+                      sessionId: result.data.createStripePaymentSession.sessionId,
+                    })
+                    .then(function (result) {
+                      // If redirection fails, display an error to the customer.
+                      if (result.error) {
+                        showErrorMessageOnScreen($(".error-message"), result.error.message);
+                      }
+                    });
+                }
+              },
+              error: function (err) {
+                console.log(err);
+              },
+            });
+          }
+
           //alert(`Yeah, man ${paymentType}`);
         });
+
+        function confirmPaymentFromCheckout(sessionId) {
+          $.ajax({
+            url: CONSTANTS.baseUrl,
+            contentType: "application/json",
+            type: "POST",
+            headers: {
+              authorization: `Bearer ${JSON.parse(token)}`,
+            },
+            data: JSON.stringify({
+              query: `mutation {
+      confirmStripeCheckoutSession(
+      sessionId: "${sessionId}"
+      ) {
+      paymentStatus
+      }
+      }
+      `,
+            }),
+            success: function (result) {
+              console.log({
+                result,
+              });
+              var paymentStatus = result.data.confirmStripeCheckoutSession.paymentStatus;
+              if (paymentStatus === "paid") {
+                showSuccessMessageOnScreen($(".error-message"), "Your payment was successful.. you're being redirected", false);
+                return setTimeout(function () {
+                  window.location.href = "/care-giver/treatments-main-dashboard.html";
+                }, 2000);
+              }
+
+              showErrorMessageOnScreen($(".error-message"), "Your payment was not successful");
+            },
+            error: function (err) {
+              console.log(err);
+            },
+          });
+        }
+
+        function showErrorMessageOnScreen(errorMessage, message, clear = true) {
+          errorMessage.css("display", "block");
+          errorMessage.css("background", "#c62828");
+          errorMessage.html(message);
+          errorMessage.animate(
+            {
+              top: "30px",
+            },
+            900,
+            "linear",
+            function () {
+              console.log("All is cool");
+            }
+          );
+          errorMessage.animate(
+            {
+              top: "50px",
+            },
+            900,
+            "linear",
+            function () {
+              console.log("All is cool");
+            }
+          );
+          setTimeout(function () {
+            if (clear) {
+              errorMessage.css("display", "none");
+            }
+          }, 2000);
+          return false;
+        }
+
+        function showSuccessMessageOnScreen(errorMessage, message, clear = true) {
+          errorMessage.css("display", "block");
+          errorMessage.css("background", "mediumseagreen");
+          errorMessage.html(message);
+          errorMessage.animate(
+            {
+              top: "30px",
+            },
+            900,
+            "linear",
+            function () {
+              console.log("All is cool");
+            }
+          );
+          errorMessage.animate(
+            {
+              top: "50px",
+            },
+            900,
+            "linear",
+            function () {
+              console.log("All is cool");
+            }
+          );
+          setTimeout(function () {
+            if (clear) {
+              errorMessage.css("display", "none");
+            }
+          }, 2000);
+          return false;
+        }
+        (function () {
+          var paymentStatus = typeof getUrlVars()["payment_status"] !== "undefined" ? getUrlVars()["payment_status"] : null;
+          var sessionId = typeof getUrlVars()["session_id"] !== "undefined" ? getUrlVars()["session_id"] : null;
+          if (paymentStatus) {
+            switch (paymentStatus) {
+              case "completed":
+                showSuccessMessageOnScreen($(".error-message"), "Finalizing your payment, hang on ... ", false);
+                if (sessionId) confirmPaymentFromCheckout(sessionId);
+                break;
+              default:
+                showErrorMessageOnScreen($(".error-message"), "Your payment was not successful");
+            }
+          }
+        })();
       });
     </script>
   </body>
