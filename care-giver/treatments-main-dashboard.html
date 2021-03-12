@@ -531,6 +531,8 @@
                             limit: 10
                             lastId: ""
                         ) {
+                          count
+                          totalAmount
                             data {
                                 id
                                 patientId
@@ -601,16 +603,14 @@
             `);
               return false;
             }
-            $(".treat_num").html(`${treatment_list.length + 1}`);
-            //Total Fees
-            let TOTAL_PAYOUT = 0;
+            $(".treat_num").html(`${result.data.listTreatments.count}`);
+
             $(".treatment_list_table").after(
               $.map(treatment_list, function (data) {
                 const date_treat = new Date(Number(data.createdAt)).toLocaleDateString("en-US", dateoptions);
                 var feenum = data.grandTotal - data.subTotal;
                 var nfee = data.grandTotal.toFixed(2);
-                //UPDATE TOTAL FEES
-                TOTAL_PAYOUT += data.grandTotal;
+
                 return `
                     	<div class="treatments-dashboard-table-row-5">
                         <div class="treatments-dashboard-table-row-5-block-1">
@@ -662,7 +662,7 @@
               })
             );
 
-            $(".total-payout").text(`$${TOTAL_PAYOUT.toFixed(2)}`);
+            $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
             $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
               var className = $(this).attr("class");
               var keyName = $(this).attr("key");
