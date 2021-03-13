@@ -251,7 +251,7 @@ $(document).ready(function () {
 			var start = getFormattedDate(dateChanged.start);
 			var end = getFormattedDate(dateChanged.end);
 			window.calendarDateSet = [start, end];
-			loadAppointment(start, end);
+			loadAppointment(start, end, window.appointmentFilter);
 		});
 		var date = new Date();
 		var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
