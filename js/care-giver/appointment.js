@@ -6,6 +6,12 @@ $(document).ready(function () {
 	window.calendarDateSet = ['', ''];
 	window.filterAppointmentBy = function(event) {
 		window.appointmentFilter = event.target.getAttribute('data-patient-id');
+		//Append User name as Filter Placeholder
+		$(".text-block-11").html(event.target.getAttribute('data-patient-name'))
+		//Toggle selection dropdown 
+        $(".dropdown-list-2.w-dropdown-list.w--open").removeClass("w--open")
+
+
 		window.calenderEvents = [];
 		window.calenderEventsTreatmentIds = [];
 		loadAppointment(
@@ -31,6 +37,10 @@ $(document).ready(function () {
 		window.appointmentFilter = '';
 		window.calenderEvents = [];
 		window.calenderEventsTreatmentIds = [];
+
+		//Append User name as Filter Placeholder
+		$(".text-block-11").html("Patient Name")
+
 		loadAppointment(
 			window.calendarDateSet[0],
 			window.calendarDateSet[1],
@@ -232,7 +242,7 @@ $(document).ready(function () {
 				$('.dropdown-list-2.w-dropdown-list').html('');
 				$.map(patientLists, function(patient) {
 					$('.dropdown-list-2.w-dropdown-list').append(
-						`<a data-patient-id="${patient.id}" class="dropdown-link-3 w-dropdown-link" onClick="filterAppointmentBy(event)">${patient.fullName}</a>`
+						`<a data-patient-id="${patient.id}" data-patient-name="${patient.fullName}" class="dropdown-link-3 w-dropdown-link" onClick="filterAppointmentBy(event)">${patient.fullName}</a>`
 					);
 				});
 			},
