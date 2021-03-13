@@ -37,11 +37,6 @@ $(document).ready(function () {
 		);
 	});
 
-    // classes of the dropdown
-	$('.dropdown-list-2.w-dropdown-list.w--open a').on('click', function() {
-		console.log($(this));
-	});
-
 	$('body').prepend('<div class="error-message"></div>');
 	const token = localStorage.getItem('token');
 	const userData = JSON.parse(localStorage.getItem('data'));
