@@ -571,6 +571,9 @@
                             email
                             dob
                           }
+                        },
+                        listAppointments(lastId: "", limit:0){
+                          count
                         }
                     }
 `,
@@ -662,7 +665,10 @@
               })
             );
 
+            // Total Payout
             $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
+            // Appointments Count
+            $(".treatments-summary-tab-1-div-label-big").text(`${result.data.listAppointments.count}`);
             $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
               var className = $(this).attr("class");
               var keyName = $(this).attr("key");

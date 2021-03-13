@@ -1,30 +1,31 @@
-window.calenderEvents = [];
-window.calenderEventsTreatmentIds = [];
-window.appointmentFilter = undefined;
-window.calendarDateSet = ['', ''];
-window.filterAppointmentBy = function(event) {
-	window.appointmentFilter = event.target.getAttribute('data-patient-id');
-	window.calenderEvents = [];
-	window.calenderEventsTreatmentIds = [];
-	loadAppointment(
-		window.calendarDateSet[0],
-		window.calendarDateSet[1],
-		window.appointmentFilter
-	);
-};
-
-window.formatAMPM = function(date) {
-	var hours = date.getHours();
-	var minutes = date.getMinutes();
-	var ampm = hours >= 12 ? 'PM' : 'AM';
-	hours = hours % 12;
-	hours = hours ? hours : 12; // the hour '0' should be '12'
-	minutes = minutes < 10 ? '0' + minutes : minutes;
-	var strTime = hours + ':' + minutes + ' ' + ampm;
-	return strTime;
-};
 
 $(document).ready(function () {
+	window.calenderEvents = [];
+	window.calenderEventsTreatmentIds = [];
+	window.appointmentFilter = undefined;
+	window.calendarDateSet = ['', ''];
+	window.filterAppointmentBy = function(event) {
+		window.appointmentFilter = event.target.getAttribute('data-patient-id');
+		window.calenderEvents = [];
+		window.calenderEventsTreatmentIds = [];
+		loadAppointment(
+			window.calendarDateSet[0],
+			window.calendarDateSet[1],
+			window.appointmentFilter
+		);
+	};
+
+	window.formatAMPM = function(date) {
+		var hours = date.getHours();
+		var minutes = date.getMinutes();
+		var ampm = hours >= 12 ? 'PM' : 'AM';
+		hours = hours % 12;
+		hours = hours ? hours : 12; // the hour '0' should be '12'
+		minutes = minutes < 10 ? '0' + minutes : minutes;
+		var strTime = hours + ':' + minutes + ' ' + ampm;
+		return strTime;
+	};
+
     // ID of the clear filter is to be passed
 	$('[data-w-id="b7e2df3c-c9b3-0ea4-c348-cfc1ce227bf0"]').click(function() {
 		window.appointmentFilter = '';
