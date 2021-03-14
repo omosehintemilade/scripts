@@ -1,6 +1,7 @@
 $(document).ready(function () {
   var errorMessage = $(".error-message");
 
+
   // Sign Up
   $(".onboardregsubmit").click(function () {
     const full_name = $(".onboarding_reg_fullname").val();
@@ -53,7 +54,7 @@ $(document).ready(function () {
     console.log("loading....");
 
     $.ajax({
-      url: CONSTANTS.baseUrl,
+      url: "https://aluuka-graph.herokuapp.com",
       contentType: "application/json",
       type: "POST",
       data: JSON.stringify({

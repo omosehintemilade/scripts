@@ -1,12 +1,22 @@
-window.addEventListener("load", runOnLoad);
-
+$(document).ready(function () {
+  
 const signOut = document.querySelector(".sign-out");
 
-function runOnLoad() {
+
+
   const fullname = document.querySelector(".onboarding_complete_fullname");
-  const dob = document.querySelector(".create_patient_dob");
-  const gender = document.querySelector(".onboarding_complete_gender");
-  const country = document.querySelector(".onboarding_complete_country");
+  const image_url = localStorage.getItem("img_url")
+  const staledob = document.querySelector(".create_patient_dob").value;
+  const dob = new Date(staledob);
+  const gender = $(".onboarding_complete_gender").children("option:selected").val();
+  console.log(gender);
+  const country = $(".onboarding_complete_country").children("option:selected").val();;
+  console.log(country);
+  // const genderSelect = document.querySelector(".onboarding_complete_gender").selectedIndex;
+  // const gender = document.getElementsByTagName("option")[genderSelect].value;
+  // const countrySelect = document.querySelector(".onboarding_complete_country").selectedIndex;
+  // const country = document.getElementsByTagName("option")[countrySelect].value;
+  // const country = $(".onboarding_complete_country").filter(":selected").val();
   const address = document.querySelector(".onboarding_complete_address");
   const email = document.querySelector(".onboarding_complete_email");
   const phone = document.querySelector(".onboarding_complete_phone");
@@ -33,6 +43,40 @@ function runOnLoad() {
 
   username.innerHTML = userData.fullName;
 
+  
+  $(".mpe-button-replace-image").replaceWith(`
+  <input type="file" id="change_img" name="change_img" accept="image/png, image/jpeg" style="display:none"/>
+  <label for="change_img" class="button-medium w-button image-label" style="color:#fff; cursor: pointer;">Replace Image</label>
+  `)
+
+  
+  $('#change_img').change(function(e) {
+    var fileName = e.target.files[0]
+    if(!fileName) {
+      return false
+    }
+    console.log("Files name", fileName)
+    $(".image-label").text("Please wait....")
+    const data = new FormData()
+    data.append("file",fileName)
+    data.append("upload_preset","s0qhad82")
+    data.append("cloud_name","cnq")
+    fetch("https://api.cloudinary.com/v1_1/devwian/image/upload",{ method:"post", body:data})
+    .then(res=>res.json())
+    .then(data_res=>{
+      const img_url = data_res.url
+      localStorage.setItem("avatar", img_url)
+      console.log('Image URL', img_url)
+      // updateFields(img_url)
+    })
+    .catch(err=>{
+      console.log("Upload error", err)
+      $(".image-label").text("Replace Image")
+    })
+  
+  
+    })
+
   if (!userData) {
     document.location.href = "/hospital-care-provider/login.html";
   }
@@ -43,6 +87,7 @@ function runOnLoad() {
 
   submitBtn.addEventListener("click", e => {
     e.preventDefault();
+    console.log(gender, country);
 
     const notificationChannel = [];
 
@@ -73,8 +118,10 @@ function runOnLoad() {
       }, 2000);
     }
 
+    
+
     $.ajax({
-      url: "https://aluuka-backend.herokuapp.com",
+      url: "https://aluuka-graph.herokuapp.com",
       contentType: "application/json",
       type: "POST",
       headers: {
@@ -85,13 +132,13 @@ function runOnLoad() {
         query: `mutation {
       onboardingCompleteProfile(
         fullName: "${fullname.value}"
-        dob: "${dob.value}"
-        gender: "${gender.value}"
-        country: "${country.value}"
+        pictureURL: "${image_url}"
+        dob: "${dob}"
+        gender: "${gender}"
+        country: "${country}"
         address: "${address.value}"
         phone: "${phone.value}"
         email: "${email.value}"
-        pictureURL: "${pictureURL}"
         notificationChannel:[${notificationChannel}]
       ) {
         success
@@ -129,9 +176,11 @@ function runOnLoad() {
       }
     });
   });
-}
 
-signOut.addEventListener("click", () => {
-  localStorage.clear();
-  document.location.href = "/hospital-care-provider/login.html";
+
+  signOut.addEventListener("click", () => {
+    localStorage.clear();
+    document.location.href = "/hospital-care-provider/login.html";
+  });
+
 });

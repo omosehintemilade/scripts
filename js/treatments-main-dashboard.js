@@ -29,7 +29,7 @@ $(document).ready(function () {
   // output  "12/08/18"
   // Treatment List
   $.ajax({
-    url: "http://localhost:5500",
+    url: "https://aluuka-graph.herokuapp.com",
     contentType: "application/json",
     type: "POST",
     headers: { authorization: `Bearer ${JSON.parse(token)}` },

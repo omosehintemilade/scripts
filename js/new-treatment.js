@@ -35,7 +35,6 @@
           return vars;
         }
         var patient_name = getUrlVars()["patient_name"];
-        console.log(patient_name);
         var patient_id = getUrlVars()["patient_id"];
         const treatment_laboratory_category_data = [
           { title: "blood count" },
@@ -106,7 +105,7 @@
           console.log(treat_it);
           console.log("loading....");
           $.ajax({
-            url: "http://localhost:5500",
+            url: "https://aluuka-graph.herokuapp.com",
             contentType: "application/json",
             type: "POST",
             headers: { authorization: `Bearer ${JSON.parse(token)}` },

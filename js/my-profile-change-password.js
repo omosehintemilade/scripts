@@ -16,7 +16,7 @@ function runOnLoad() {
     e.preventDefault();
     if (newPassword.value === confirmPassword.value) {
       $.ajax({
-        url: "https://aluuka-backend.herokuapp.com",
+        url: "https://aluuka-graph.herokuapp.com",
         contentType: "application/json",
         type: "POST",
         headers: {

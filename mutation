@@ -30,3 +30,17 @@ acceptLegalConsent: true
   data
   }
 }
+
+mutation{
+createTreatment(
+patientId: 01F065XXQ6XBYTK4M3WJAMZMG
+treatmentItems: [TreatmentItemInput!]!
+notes: String!
+kindOfHealthcareProvider: HealthcareProviderType
+){
+  success
+  message
+  token
+  data
+}
+  }

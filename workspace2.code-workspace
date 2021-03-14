@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "."
+		},
+		{
+			"path": "..\\maildrip"
 		}
 	],
 	"settings": {
