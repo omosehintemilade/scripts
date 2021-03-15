@@ -14,7 +14,11 @@
     <link href="../css/webflow-conversion-a19937da9b1f54730ca3.webflow.css" rel="stylesheet" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
     <script type="text/javascript">
-      WebFont.load({ google: { families: ["Mulish:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"] } });
+      WebFont.load({
+        google: {
+          families: ["Mulish:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"],
+        },
+      });
     </script>
     <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
     <script type="text/javascript">
@@ -31,10 +35,12 @@
         border-color: #3e634f !important;
         transition: all ease-in-out 0.6s;
       }
+
       .paypal-block:hover {
         border-color: #3e634f !important;
         transition: all ease-in-out 0.6s;
       }
+
       .visacard-block:hover {
         border: 2px solid #3e634f !important;
         border-color: #3e634f !important;
@@ -42,6 +48,7 @@
       }
     </style>
   </head>
+
   <body class="body-2">
     <div data-w-id="c30711d5-5116-4f71-12a1-0a4231601cf9" class="treatment-payment-add-payment-method-popup-modal">
       <div class="treatment-payment-add-payment-method-popup-element-block">
@@ -354,151 +361,7 @@
     ></script>
     <script src="../js/webflow.js" type="text/javascript"></script>
     <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
-    <script type="application/javascript">
-      $(document).ready(function () {
-        $(".sign-out").click(function () {
-          localStorage.clear();
-          var loc = `${$(location).attr("origin")}/care-giver/login`;
-          $(location).attr("href", loc);
-        });
-        var errorMessage = $(".error-message");
-        const token = localStorage.getItem("token");
-        const userData = JSON.parse(localStorage.getItem("data"));
-        if (!userData) {
-          var loc = `${$(location).attr("origin")}/care-giver/login.html`;
-          $(location).attr("href", loc);
-        }
-        const userfullname = userData.fullName;
-        $(".userfullname").html(`${userfullname}`);
-        var paypalType = false;
-        var stripeType = false;
-        var paymentType = "";
-        $(".visacard-block").click(function (event) {
-          if (!stripeType) {
-            alert(paymentType);
-            $(".paypal-block").removeClass("pay-select");
-            $(".visacard-block").addClass("pay-select");
-            stripeType = true;
-            paypalType = false;
-            paymentType = "Stripe";
-          } else {
-            //alert("ooo no")
-            $(".paypal-block").removeClass("pay-select");
-            stripeType = false;
-            paymentType = "";
-          }
-        });
-        $(".paypal-block").click(function (event) {
-          if (!paypalType) {
-            alert(paymentType);
-            $(".paypal-block").addClass("pay-select");
-            $(".visacard-block").removeClass("pay-select");
-            stripeType = false;
-            paypalType = true;
-            paymentType = "Paypal";
-          } else {
-            //alert("ooo no")
-            $(".paypal-block").removeClass("pay-select");
-            paypalType = false;
-            paymentType = "";
-          }
-        });
-        function getUrlVars() {
-          var vars = [],
-            hash;
-          var hashes = window.location.href.slice(window.location.href.indexOf("?") + 1).split("&");
-          for (var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split("=");
-            vars.push(hash[0]);
-            vars[hash[0]] = hash[1];
-          }
-          return vars;
-        }
-        var treatment_id = getUrlVars()["treatment_id"];
-        var hcp_id = getUrlVars()["hcp_id"];
-        console.log("Id's", [treatment_id, hcp_id]);
-        // Treatment List
-        $.ajax({
-          url: CONSTANTS.baseUrl,
-          contentType: "application/json",
-          type: "POST",
-          headers: { authorization: `Bearer ${JSON.parse(token)}` },
-          data: JSON.stringify({
-            query: `query {
-                      getTreatmentById(
-                          id: "${treatment_id}"
-                      ) {
-                            id
-                            patientId
-                            subTotal
-                            grandTotal
-                          }
-                  }`,
-          }),
-          success: function (result) {
-            var treatment_data = result.data.getTreatmentById;
-            var feenum = treatment_data.grandTotal - treatment_data.subTotal;
-            var aluuka_fee = feenum.toFixed(2);
-            $(".total_payment").html(`$${treatment_data.grandTotal.toFixed(2)}`);
-            $(".treat_payment").html(`$${treatment_data.subTotal.toFixed(2)}`);
-            $(".aluuka_payment").html(`$${aluuka_fee}`);
-          },
-          error: function (err) {
-            console.log(err);
-          },
-        });
-        // Treatment List
-        $.ajax({
-          url: CONSTANTS.baseUrl,
-          contentType: "application/json",
-          type: "POST",
-          headers: { authorization: `Bearer ${JSON.parse(token)}` },
-          data: JSON.stringify({
-            query: `query {
-                                            getHealthcareProviderById(
-                                                id: "${hcp_id}"
-                                            ) {
-																									id
-                                                  fullName
-                                                  phone
-                                                  email
-                                               }
-                                        }
-                                    `,
-          }),
-          success: function (result) {
-            console.log(result);
-            const hcp_data = result.data.getHealthcareProviderById;
-            $(".hcp_name").html(hcp_data.fullName);
-            $(".hcp_phone").html(hcp_data.phone);
-            $(".hcp_email").html(hcp_data.email);
-            console.log(JSON.stringify(hcp_data));
-          },
-          error: function (err) {
-            console.log(err);
-          },
-        });
-        //$(".notification-popup-model-block")
-        $(".payment-method-pay-button").click(function (event) {
-          if (paymentType === "") {
-            errorMessage.css("display", "block");
-            errorMessage.css("background", "#c62828");
-            errorMessage.html("Please select payment method...");
-            errorMessage.animate({ top: "30px" }, 900, "linear", function () {
-              console.log("All is cool");
-            });
-            errorMessage.animate({ top: "50px" }, 900, "linear", function () {
-              console.log("All is cool");
-            });
-            setTimeout(function () {
-              errorMessage.css("display", "none");
-            }, 2000);
-            return false;
-          }
-          $(".notification-popup-model-block").show();
-          //alert(`Yeah, man ${paymentType}`);
-        });
-      });
-    </script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="../js/care-giver/treatment-details-payment.js" type="text/javascript"></script>
   </body>
 </html>
