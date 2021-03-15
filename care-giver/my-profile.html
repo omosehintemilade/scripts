@@ -322,28 +322,6 @@
     ></script>
     <script src="../js/webflow.js" type="text/javascript"></script>
     <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
-    <script type="application/javascript">
-      $(document).ready(function () {
-        const userData = JSON.parse(localStorage.getItem("data"));
-        console.log(userData);
-        if (!userData) {
-          var loc = `${$(location).attr("origin")}/care-giver/login.html`;
-          $(location).attr("href", loc);
-        }
-        $(".userfullname").html(`${userData.fullName}`);
-        $(".prof_fullname").attr("placeholder", `${userData.fullName}`);
-        const options = {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-        };
-        const main_date = new Date(userData.dob).toLocaleDateString("en-US", options);
-        $(".prof_dob").attr("placeholder", `${main_date}`);
-        $(".prof_address").attr("placeholder", `${userData.address}`);
-        $(".prof_email").attr("placeholder", `${userData.email}`);
-        $(".prof_phone").attr("placeholder", `${userData.phone}`);
-      });
-    </script>
+    <script src="../js/care-giver/my-profile.js" type="text/javascript"></script>
   </body>
 </html>

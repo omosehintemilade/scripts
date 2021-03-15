@@ -28,6 +28,9 @@ $(document).ready(function () {
   <option value="female">Female</option>
   `);
 
+  var USER_IMAGE
+
+
   (function () {
     $.ajax({
       url: CONSTANTS.baseUrl,
@@ -52,6 +55,8 @@ $(document).ready(function () {
           $(".onboarding_complete_address").val(userInfo.address);
           $(".onboarding_complete_phone").val(userInfo.phone);
           $(".onboarding_complete_email").val(userInfo.email);
+          USER_IMAGE = userInfo.pictureURL || ""
+          $(".mpe-profile-image").attr("src", userInfo.pictureURL || "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png").css({ width: "200px", height: "200px", borderRadius: "100px" })
 
           if (userInfo.notificationChannel.includes("email")) {
             $("#notfemail").click();
@@ -125,6 +130,41 @@ $(document).ready(function () {
     $(".error-message").html("");
   }
 
+  // IMAGE SECTION
+  $(".mpe-button-replace-image").replaceWith(`
+  <input type="file" id="change_img" name="change_img" accept="image/png, image/jpeg" style="display:none"/>
+  <label for="change_img" class="button-medium w-button image-label" style="color:#fff; cursor: pointer; text-align: center;">Replace Image</label>
+  `)
+
+  $('#change_img').change(function(e) {
+    var fileName = e.target.files[0]
+    if(!fileName) {
+      return false
+    }
+    console.log("Files name", fileName)
+    $(".image-label").text("Please wait....")
+    const data = new FormData()
+    data.append("file",fileName)
+    data.append("upload_preset","s0qhad82")
+    data.append("cloud_name","cnq")
+    fetch("https://api.cloudinary.com/v1_1/devwian/image/upload",{ method:"post", body:data})
+    .then(res=>res.json())
+    .then(data_res=>{
+      const img_url = data_res.url
+      USER_IMAGE =  img_url
+      console.log('Image URL', img_url)
+      $(".image-label").text(fileName.name)
+      $(".mpe-profile-image").attr("src", img_url).css({ width: "200px", height: "200px", borderRadius: "100px" });
+      // updateFields(img_url)
+    })
+    .catch(err=>{
+      console.log("Upload error", err)
+      $(".image-label").text("Replace Image")
+    })
+
+    })
+
+
   // Edit Profile
   $(".onboard-comp-submit").click(function (event) {
     event.preventDefault();
@@ -171,6 +211,7 @@ $(document).ready(function () {
                                         address: "${address}"
                                         phone: "${phone}"
                                         email: "${email}"
+                                        pictureURL: "${USER_IMAGE}"
                                         notificationChannel: ${notf}
                                     ) { 
                                             success message returnStatus data token
@@ -198,7 +239,7 @@ $(document).ready(function () {
 
           localStorage.setItem("data", JSON.stringify(result.data.onboardingCompleteProfile.data));
           setTimeout(function () {
-            var loc = `${$(location).attr("origin")}/care-giver/treatments-main-dashboard.html`;
+            var loc = `${$(location).attr("origin")}/care-giver/my-profile.html`;
             $(location).attr("href", loc);
           }, 3000);
         }
