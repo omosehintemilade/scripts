@@ -1,4 +1,11 @@
 $(document).ready(function () {
+
+  
+  $(".sign-out").click(function () {
+    localStorage.clear();
+    var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+    $(location).attr("href", loc);
+  });
   var errorMessage = $(".error-message");
   $.get("https://restcountries.eu/rest/v2/all").done(function (data) {
     data.map(function (i) {
@@ -8,21 +15,30 @@ $(document).ready(function () {
     });
   });
   
+  const prof_fullName = document.querySelector(".full-name");
+  const prof_dob = document.querySelector(".dob");
+  const prof_gender = document.querySelector(".gender");
+  const prof_country = document.querySelector(".congo");
+  const prof_address = document.querySelector(".address-text");
+  const prof_phone = document.querySelector(".phone");
+  const prof_email = document.querySelector(".email");
   
-  const username = document.querySelector(".cap-fullname-field");
-  const useremail = document.querySelector(".cap-email-field");
+  
+  const editUsername = document.querySelector(".cap-fullname-field");
+  const editUseremail = document.querySelector(".cap-email-field");
 
-  username.disabled = true;  
-  useremail.disabled = true;
+  editUsername.disabled = true;  
+  editUseremail.disabled = true;
 
   const userData = JSON.parse(localStorage.getItem("data"));
   
   console.log(userData.fullName, userData.email);
 
-  username.value = userData.fullName;
-  useremail.value = userData.email;
+  editUsername.value = userData.fullName;
+  editUsername.value = userData.fullName;
+  prof_fullName.textContent = userData.fullName;
   let token = localStorage.getItem("token")
-  alert(token);
+  // alert(token);
   // REMOVE PRECEEDING & TRAILING QUOTE SYMBOLS
   // token = token.substring(1, token.length - 1);
 
@@ -149,6 +165,8 @@ $(".onboard-comp-submit").click(function (event) {
       return;
     }
 
+    console.log(notf);
+
   
   // const updateFields = (image_url) => {
       
@@ -171,7 +189,7 @@ $(".onboard-comp-submit").click(function (event) {
           address: "${address}"
           phone: "${phone}"
           email: "${email}"
-          notificationChannel: [${notf}]
+          notificationChannel: ${notf}
         ) {
           success
           message

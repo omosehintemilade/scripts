@@ -48,7 +48,7 @@ $(document).ready(function () {
 		);
 	});
 
-	$('body').prepend('<div class="error-message"></div>');
+	$('body').prepend('<div class="error-message"></div>');s
 	const token = localStorage.getItem('token');
 	const userData = JSON.parse(localStorage.getItem('data'));
 	if (!userData) {

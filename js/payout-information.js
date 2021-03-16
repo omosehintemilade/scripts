@@ -1,8 +1,16 @@
 window.addEventListener("load", runOnLoad);
 let token = localStorage.getItem("token")
+$('body').prepend('<div class="error-message"></div>');
 
 function runOnLoad() {
-  const dashboardBtn = document.querySelector(".button-medium");
+
+  
+  $(".sign-out").click(function () {
+    localStorage.clear();
+    var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+    $(location).attr("href", loc);
+  });
+  const dashboardBtn = document.querySelector(".div-block-126 .button-medium");
   const closeBtn = document.querySelectorAll(".close-modal");
   const modal = document.querySelector(".box");
   const paypalCheckbox = document.querySelector(".paypal-checkbox");
@@ -14,16 +22,17 @@ function runOnLoad() {
   const bankNum = document.querySelector(".bank-account");
   const submitBank = document.querySelector(".bank-submit");
   const submitPaypal = document.querySelector(".paypal-submit");
-  // const paymentData = {
-  //   paypalEmail: "",
-  //   bankNum: "",
-  //   swiftCode: ""
-  // };
+  const paymentData = {
+    paypalEmail: "",
+    bankNum: "",
+    swiftCode: ""
+  };
+	const errorMessage = $(".error-message");
   
 
   const payoutMethod = [];
 
-  // let PayoutMethod = { paypal: "Paypal", bank: "Bank" };
+  let PayoutMethod = { paypal: "Paystack", bank: "Bank" };
 
 
 
@@ -60,15 +69,17 @@ function runOnLoad() {
   });
 
   submitPaypal.addEventListener("click", () => {
-    const paymentData = "Paystack";
+    // const paymentData = "Paystack";
     
     localStorage.setItem("paymentData", paymentData);
-    console.log(paymentData);
-    // paymentData.paypalEmail = paypalEmail.value;
+    console.log(paypalEmail.value);
+    paymentData.paypalEmail = paypalEmail.value;
     closeModal();
   });
 
   submitBank.addEventListener("click", () => {
+    console.log(bankNum.value);
+    console.log(swiftCode.value);
     paymentData.bankNum = bankNum.value;
     paymentData.swiftCode = swiftCode.value;
     closeModal();
@@ -76,20 +87,24 @@ function runOnLoad() {
 
 dashboardBtn.addEventListener("click", e => {
   if (paypalCheckbox.checked) {
-      payoutMethod.push("Paystack");
-    // if (payoutMethod.includes(PayoutMethod.paypal)) {
-    //     console.log(payoutMethod);
-    //     return;
-    //   }
+    if (payoutMethod.includes(payoutMethod.paypal)) {
+        console.log(payoutMethod);
+           PayoutMethod.push(Paystack);
+        return;
+      }
     }
     if (bankCheckbox.checked) {
       if (payoutMethod.includes(PayoutMethod.bank)) {
-        payoutMethod.push("Bank");
+        PayoutMethod.push(Bank);
         return;
       }
     }
 
-    const paymentData = localStorage.getItem("paymentData");
+    console.log(PayoutMethod);
+
+    const userData = JSON.parse(localStorage.getItem("data"));
+    const userID = userData.id;
+    console.log(userID);
   $.ajax({
     url: "https://aluuka-graph.herokuapp.com",
     contentType: "application/json",
@@ -101,9 +116,9 @@ dashboardBtn.addEventListener("click", e => {
     data: JSON.stringify({
       query: `mutation {
         onboardingCompletePayoutInformation(
-          payoutMethod: ["${payoutMethod}"]
+          payoutMethod: Paystack
           payoutAccountNumberOrEmail: "${paymentData}"
-          payoutSwiftCode: ""
+          payoutAccountSwiftCode: ""
           ) {
       success
       message
@@ -115,30 +130,35 @@ dashboardBtn.addEventListener("click", e => {
     }),
     success: function (result) {
       console.log(result);
-      if (!result.data.onboardingCompleteProfile.success) {
-        errorMessage.style.display = "block";
-        errorMessage.style.background = "#c62828";
-        errorMessage.innerHTML =
-          result.data.onboardingCompleteProfile.message;
+      if (!result.data.onboardingCompletePayoutInformation.success) {
+        errorMessage.css("display", "block");
+        errorMessage.css("background", "#c62828");
+        errorMessage.html(
+          result.data.onboardingCompleteProfile.message);
+          console.log(result.data.onboardingCompleteProfile.message);
         errorMessage.animate({ top: "30px" }, 900, "linear");
       }
       // document.location.href =
       //   "/hospital-care-provider/medical-practice.html";
-      console.log(result.data.onboardingCompleteProfile.message);
-      errorMessage.style.display = "block";
-      errorMessage.style.background = "#43a047";
-      errorMessage.innerHTML = result.data.onboardingCompleteProfile.message;
+      else{
+      console.log(result.data.onboardingCompletePayoutInformation.message);
+      errorMessage.css("display", "block");
+      errorMessage.css("background", "#43a047");
+      errorMessage.html(
+        result.data.onboardingCompletePayoutInformation.message);
+        console.log(result.data.onboardingCompletePayoutInformation.message);
       errorMessage.animate({ top: "30px" }, 900, "linear");
       setTimeout(function () {
         errorMessage.style.display = "none";
       }, 2000);
       localStorage.setItem(
         "data",
-        JSON.stringify(result.data.onboardingCompleteProfile.data)
+        JSON.stringify(result.data.onboardingCompletePayoutInformation.data)
       );
       
       document.location.href =
-        "/hospital-care-provider/treatments-main-dashboard.html";
+        "/health-care-provider/treatments-main-dashboard.html";
+      }
     },
     error: function (err) {
       console.log(err);

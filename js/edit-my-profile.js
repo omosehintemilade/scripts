@@ -1,6 +1,11 @@
 $(document).ready(function () {
   
-const signOut = document.querySelector(".sign-out");
+  // import { CONSTANTS } from '../js/constants';
+$(".sign-out").click(function () {
+  localStorage.clear();
+  var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+  $(location).attr("href", loc);
+});
 
 
 
@@ -177,10 +182,5 @@ const signOut = document.querySelector(".sign-out");
     });
   });
 
-
-  signOut.addEventListener("click", () => {
-    localStorage.clear();
-    document.location.href = "/hospital-care-provider/login.html";
-  });
 
 });

@@ -1,6 +1,13 @@
 
       $(document).ready(function () {
         var errorMessage = $(".error-message");
+
+        
+  $(".sign-out").click(function () {
+    localStorage.clear();
+    var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+    $(location).attr("href", loc);
+  });
         // Getting users token from local storage
         const token = localStorage.getItem("token");
         if (!token) {
@@ -8,6 +15,9 @@
           $(location).attr("href", loc);
         }
         console.log(`Bearer ` + JSON.parse(token));
+        const userData = JSON.parse(localStorage.getItem("data"));
+        console.log(userData);
+      
         // Care Giver Role
         $(".onboarding_role_caregiver").click(function (event) {
           event.preventDefault();

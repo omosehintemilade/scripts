@@ -2,12 +2,17 @@ $(document).ready(function(){
 
     var errorMessage = $('.error-message')
     
+  $(".sign-out").click(function () {
+    localStorage.clear();
+    var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+    $(location).attr("href", loc);
+  });
     const token = localStorage.getItem("token")
     
     const userToken = JSON.parse(token)
     
     if(!userToken) {
-        var loc = `${$(location).attr('origin')}/hospital-care-provider/login`
+        var loc = `${$(location).attr('origin')}/hospital-care-provider/login.html`
         $(location).attr('href',loc)
     }
     

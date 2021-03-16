@@ -3,22 +3,22 @@ $(document).ready(function () {
   const userData = JSON.parse(localStorage.getItem("data"));
 //   var treatment_list = "One";
   if (!userData) {
-    var loc = `${$(location).attr("origin")}/care-giver/login`;
+    var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
     $(location).attr("href", loc);
   }
   const status = { name: "Completed", name: "Pending", name: "Cancelled" };
   $(".status_data").html(
     $.map(status, function (status_data) {
-      return `<a href="/care-giver/treatments-main-dashboard?status=${status_data.name}" class="dropdown-link-3 w-dropdown-link" tabindex="0">${status_data.name}</a>`;
+      return `<a href="/health-care-provider/treatments-main-dashboard?status=${status_data.name}" class="dropdown-link-3 w-dropdown-link" tabindex="0">${status_data.name}</a>`;
     })
   );
   const userfullname = userData.fullName;
   var firstName = userfullname.replace(/ .*/, "");
-  $(".firstname").html(`Welcome, ${firstName}`);
+  $(".firstname").html(`Welcome, ${userfullname}`);
   $(".userfullname").html(`${userfullname}`);
   $(".sign-out").click(function () {
     localStorage.clear();
-    var loc = `${$(location).attr("origin")}/care-giver/login`;
+    var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
     $(location).attr("href", loc);
   });
   const dateoptions = {
@@ -40,6 +40,8 @@ $(document).ready(function () {
                       limit: 10
                       lastId: ""
                   ) {
+                    count
+                    totalAmount
                       data {
                           id
                           patientId
@@ -58,6 +60,7 @@ $(document).ready(function () {
                           }
                           subTotal
                           grandTotal
+                          isPaid
                           isAccepted
                           isCompleted
                           createdAt
@@ -78,13 +81,25 @@ $(document).ready(function () {
                       email
                       dob
                     }
+                  },
+                  listAppointments(lastId: "", limit:0){
+                    count
                   }
               }
-`,
+                `,
     }),
     success: function (result) {
-      treatment_list = result.data.listTreatments.data;
+      console.log(result);
+      const treatment_count = result.data.listTreatments.count;
+      const payout_count = result.data.listTreatments.totalAmount;
+      const appointment_count = result.data.listAppointments.count;
       let patient_list = result.data.listPatients.data;
+      let treatment_list = result.data.listTreatments.data;
+
+      
+      $(".total-appointment").html(appointment_count);
+      $(".total-payout").html(payout_count);
+      $(".total-treatment").html(treatment_count);
     
       // APPEND PATIENT LIST TO TEMPLATE
       $.map(patient_list, function (patient, index) {
@@ -95,8 +110,7 @@ $(document).ready(function () {
       if (Array.isArray(treatment_list) && !treatment_list.length) {
         //var loc = `${$(location).attr('origin')}/empty-states/empty-state-1`
         //$(location).attr('href',loc)
-        $(".treat_num").html("0");
-        $(".treatment_list_table").html(`
+        $(".treatments-dashboard-table-div-block").html(`
             <div class="treatments-dashboard-table-row-1">
             <div class="treatments-dashboard-table-row-1-block-1">
                 <div class="treatments-dashboard-table-column-label">
@@ -143,12 +157,31 @@ $(document).ready(function () {
               <img src="https://uploads-ssl.webflow.com/5fe9d2f67366097441900c56/5fe9d2f67366093bd9900ca7_Group%205302.png" loading="lazy" width="297" alt="" />
               <div class="emply-state-header">You have no Treatment</div>
               <div class="empty-state-subheader">Click to add a new Treatment</div>
-              <a href="../care-giver/new-treatment-laboratory.html" class="button-medium-stretch w-button">Create Treatment</a>
+              <a href="../health-care-provider/new-treatment-laboratory.html" class="button-medium-stretch w-button">Create Treatment</a>
           </div>
           </div>
       `);
         return false;
       }
+      
+      $(".treat_num").html(`${result.data.listTreatments.count}`);
+
+      updateTreatmentTable(treatment_list);
+
+      // Total Payout
+      $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
+      // Appointments Count
+      $(".total appointment").text(`${result.data.listAppointments.count}`);
+      $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
+        var className = $(this).attr("class");
+        var keyName = $(this).attr("key");
+        alert(`${className} ${keyName}`);
+        $(`${keyName}-show`).addClass("w--open");
+      });
+      //console.log(JSON.stringify(treatment_list));
+    },
+    error: function (err) {
+      console.log(err);
       $(".treatment_list_table").html(
         $.map(treatment_list, function (data) {
           const date_treat = new Date(data.createdAt).toLocaleDateString("en-US", dateoptions);
@@ -199,7 +232,7 @@ $(document).ready(function () {
                   <div class="treatments-dashboard-table-row-5">
                   <div class="treatments-dashboard-table-row-5-block-1">
                       <div class="treatments-dashboard-table-row-5-label">
-                          <a href="/care-giver/view-treatment.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>
+                          <a href="/health-care-provider/view-treatment.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>
                       </div>
                   </div>
                   <div id="w-node-f6533b15-1108-ca7c-8368-91a6c714355c-f6900c70" class="treatments-dashboard-table-row-5-block-2">
@@ -245,6 +278,8 @@ $(document).ready(function () {
               `;
         })
       );
+    },
+  });
       $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
         var className = $(this).attr("class");
         var keyName = $(this).attr("key");
@@ -252,11 +287,6 @@ $(document).ready(function () {
         $(`${keyName}-show`).addClass("w--open");
       });
       console.log(JSON.stringify(treatment_list));
-    },
-    error: function (err) {
-      console.log(err);
-    },
-  });
 //   console.log("One time", treatment_list);
   /*$(".dropdown-toggle-4").click(function() {
 var className = $(this).attr("class");   

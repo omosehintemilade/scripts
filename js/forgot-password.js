@@ -1,5 +1,11 @@
 
 $(document).ready(function(){
+    $(".sign-out").click(function () {
+      localStorage.clear();
+      var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+      $(location).attr("href", loc);
+    });
+
     var errorMessage = $('.error-message')
     // Forgot Password
     $(".forgot_password_btn").click(function(event) {

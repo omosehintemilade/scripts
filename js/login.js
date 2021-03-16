@@ -2,10 +2,17 @@ $(document).ready(function(){
 
 var errorMessage = $('.error-message')
 
+$(".sign-out").click(function () {
+  localStorage.clear();
+  var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+  $(location).attr("href", loc);
+});
 // Login
-$(".loginsubmit").click(function(){
-    const email = $(".login_email").val()
-    const password = $(".login_password").val()
+$(".loginsubmit").click(function(event){
+  event.preventDefault();
+    const email = $(".email-field").val()
+    const password = $(".password-field").val()
+    console.log("email:", email, "password:", password)
     
     $(".loginsubmit").html("Loading....")
 
@@ -86,6 +93,8 @@ $(".loginsubmit").click(function(){
                     setTimeout(function(){ 
                       errorMessage.css("display", "none")
                     }, 2000)
+                    var loc = `${$(location).attr('origin')}/care-giver/treatments-main-dashboard`
+                    $(location).attr('href',loc)
                 } else {
                   $(".loginsubmit").html("Login")
                   errorMessage.css("display", "block")
@@ -104,9 +113,10 @@ $(".loginsubmit").click(function(){
                   setTimeout(function(){ 
                     errorMessage.css("display", "none")
                   }, 2000)
-                  localStorage.setItem('data', JSON.stringify(result.data.login.data))
-                  localStorage.setItem('token', JSON.stringify(result.data.login.token))
-                  var loc = `${$(location).attr('origin')}/hospital-care-provider/treatments-main-dashboard`
+                  
+                  localStorage.setItem("data", JSON.stringify(result.data.login.data));
+                  localStorage.setItem("token", JSON.stringify(result.data.login.token));
+                  var loc = `${$(location).attr('origin')}/health-care-provider/treatments-main-dashboard`
                   $(location).attr('href',loc)
               	}
             }

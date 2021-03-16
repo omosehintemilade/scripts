@@ -1,4 +1,11 @@
  var treatmentOption = "";
+
+ 
+ $(".sign-out").click(function () {
+  localStorage.clear();
+  var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+  $(location).attr("href", loc);
+});
       function setTreatmentOption(val) {
         treatmentOption = val;
         $(".treatment-option-val").text(`${treatmentOption}`);

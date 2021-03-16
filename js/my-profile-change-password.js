@@ -1,6 +1,14 @@
 window.addEventListener("load", runOnLoad);
 
 function runOnLoad() {
+
+  
+  $(".sign-out").click(function () {
+    localStorage.clear();
+    var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+    $(location).attr("href", loc);
+  });
+
   const username = document.querySelector(".userfullname");
   const oldPassword = document.querySelector(".old-password");
   const newPassword = document.querySelector(".new-password");
