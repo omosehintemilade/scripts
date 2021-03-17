@@ -11,6 +11,44 @@ $(document).ready(function() {
 		var loc = `${$(location).attr('origin')}/care-giver/login.html`;
 		$(location).attr('href', loc);
 	}
+
+	$(".treatment-payment-3-payment-method").css({ overflow: "scroll"})
+
+	$(".paypal-block").replaceWith(`<div id="paypal-button-container"></div>`)
+
+	var PAYPAL_REFERENCE_ID
+	var PAYPAL_AMOUNT
+
+	paypal.Buttons({
+		createOrder: function(data, actions) {
+		  // This function sets up the details of the transaction, including the amount and line item details.
+		  return actions.order.create({
+			purchase_units: [{
+				reference_id: PAYPAL_REFERENCE_ID,
+                description: "Aluuka Treatment Payment",
+			  amount: {
+				value: `${PAYPAL_AMOUNT}`
+			  }
+			}]
+		  });
+		},
+		onApprove: function(data, actions) {
+			return actions.order.capture().then(function(details) {
+				showSuccessMessageOnScreen(
+					$('.error-message'),
+					'Finalizing your payment, hang on ... ',
+					false
+				);
+
+				console.log(details)
+				let paypalOrderId = details.id
+				let paypalReferenceId = details.purchase_units[0].reference_id
+
+			  	confirmPayPalPaymentFromCheckout(paypalOrderId, paypalReferenceId)
+			});
+		  }
+	  }).render('#paypal-button-container');
+
 	const userfullname = userData.fullName;
 	$('.userfullname').html(`${userfullname}`);
 	var paypalType = false;
@@ -91,6 +129,8 @@ $(document).ready(function() {
 			);
 			$('.treat_payment').html(`$${treatment_data.subTotal.toFixed(2)}`);
 			$('.aluuka_payment').html(`$${aluuka_fee}`);
+			PAYPAL_AMOUNT = treatment_data.grandTotal
+			PAYPAL_REFERENCE_ID = treatment_data.id
 		},
 		error: function(err) {
 			console.error(err);
@@ -149,13 +189,13 @@ $(document).ready(function() {
 				},
 				data: JSON.stringify({
 					query: `mutation {
-createStripePaymentSession(
-treatmentId: "${treatment_id}",
-healthcareProviderId: "${hcp_id}"
-) {
-sessionId
-}
-}
+							createStripePaymentSession(
+							treatmentId: "${treatment_id}",
+							healthcareProviderId: "${hcp_id}"
+							) {
+							sessionId
+							}
+							}
 `
 				}),
 				success: function(result) {
@@ -209,6 +249,53 @@ sessionId
 				var paymentStatus =
 					result.data.confirmStripeCheckoutSession.paymentStatus;
 				if (paymentStatus === 'paid') {
+					showSuccessMessageOnScreen(
+						$('.error-message'),
+						"Your payment was successful.. you're being redirected",
+						false
+					);
+					return setTimeout(function() {
+						window.location.href =
+							'/care-giver/treatments-main-dashboard.html';
+					}, 2000);
+				}
+
+				showErrorMessageOnScreen(
+					$('.error-message'),
+					'Your payment was not successful'
+				);
+			},
+			error: function(err) {
+				console.error(err);
+			}
+		});
+	}
+
+	function confirmPayPalPaymentFromCheckout(paypalOrderId, paypalReferenceId) {
+		$.ajax({
+			url: CONSTANTS.baseUrl,
+			contentType: 'application/json',
+			type: 'POST',
+			headers: {
+				authorization: `Bearer ${JSON.parse(token)}`
+			},
+			data: JSON.stringify({
+				query: `mutation {
+					confirmPayPalCheckoutSession(
+						orderID: "${paypalOrderId}",
+						referenceId: "${paypalReferenceId}"
+					) {
+					status
+					message
+					}
+					}
+      				`
+			}),
+			success: function(result) {
+				console.log(result)
+				var paymentStatus =
+					result.data.confirmPayPalCheckoutSession.status;
+				if (paymentStatus) {
 					showSuccessMessageOnScreen(
 						$('.error-message'),
 						"Your payment was successful.. you're being redirected",
