@@ -1,6 +1,11 @@
 $(document).ready(function () {
+  $("body").prepend('<div class="error-message"></div>');
   const token = localStorage.getItem("token");
   const userData = JSON.parse(localStorage.getItem("data"));
+
+  //remove dummy table
+  $(".treatments-dashboard-table-div-block").html();
+
 //   var treatment_list = "One";
   if (!userData) {
     var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
@@ -93,9 +98,12 @@ $(document).ready(function () {
       const treatment_count = result.data.listTreatments.count;
       const payout_count = result.data.listTreatments.totalAmount;
       const appointment_count = result.data.listAppointments.count;
-      let patient_list = result.data.listPatients.data;
-      let treatment_list = result.data.listTreatments.data;
-
+      var patient_list = result.data.listPatients.data;
+      var treatment_list = result.data.listTreatments.data;
+      for (i = 0; i < treatment_list.length; i++) {
+        console.log(treatment_list[i].patient.fullName);
+      }
+      console.log(treatment_list);
       
       $(".total-appointment").html(appointment_count);
       $(".total-payout").html(payout_count);
@@ -108,9 +116,7 @@ $(document).ready(function () {
       //
 
       if (Array.isArray(treatment_list) && !treatment_list.length) {
-        //var loc = `${$(location).attr('origin')}/empty-states/empty-state-1`
-        //$(location).attr('href',loc)
-        $(".treatments-dashboard-table-div-block").html(`
+        $(".pat-list").html(`
             <div class="treatments-dashboard-table-row-1">
             <div class="treatments-dashboard-table-row-1-block-1">
                 <div class="treatments-dashboard-table-column-label">
@@ -166,7 +172,7 @@ $(document).ready(function () {
       
       $(".treat_num").html(`${result.data.listTreatments.count}`);
 
-      updateTreatmentTable(treatment_list);
+      // updateTreatmentTable(treatment_list);
 
       // Total Payout
       $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
@@ -178,61 +184,18 @@ $(document).ready(function () {
         alert(`${className} ${keyName}`);
         $(`${keyName}-show`).addClass("w--open");
       });
-      //console.log(JSON.stringify(treatment_list));
-    },
-    error: function (err) {
-      console.log(err);
-      $(".treatment_list_table").html(
+      console.log(JSON.stringify(treatment_list));
+      $(".pat-list").html(
         $.map(treatment_list, function (data) {
           const date_treat = new Date(data.createdAt).toLocaleDateString("en-US", dateoptions);
           console.log(date_treat);
           var feenum = data.grandTotal - data.subTotal;
           var nfee = feenum.toFixed(2);
           return `
-                    <div class="treatments-dashboard-table-row-1">
-                        <div class="treatments-dashboard-table-row-1-block-1">
-                        <div class="treatments-dashboard-table-column-label">
-                            Patient Name
-                        </div>
-                        </div>
-                        <div
-                        id="w-node-e6bbbcb8-82ce-bf78-56df-d683a55d83a1-c3900c77"
-                        class="treatments-dashboard-table-row-1-block-2"
-                        >
-                        <div class="treatments-dashboard-table-column-label">Date</div>
-                        </div>
-                        <div
-                        id="w-node-cc1ab0bc-be93-b387-bb74-33198ef75f23-c3900c77"
-                        class="treatments-dashboard-table-row-1-block-4"
-                        >
-                        <div class="treatments-dashboard-table-column-label">
-                            Treatment
-                        </div>
-                        </div>
-                        <div class="treatments-dashboard-table-row-1-block-3">
-                        <div class="treatments-dashboard-table-column-label">Cost</div>
-                        </div>
-                        <div
-                        id="w-node-c214a8f0-05fb-acab-aaa0-96ce3b328417-c3900c77"
-                        class="treatments-dashboard-table-row-1-block-5"
-                        >
-                        <div class="treatments-dashboard-table-column-label">
-                            Payment Status
-                        </div>
-                        </div>
-                        <div
-                        id="w-node-e5139410-fc55-d579-1749-60360008d427-c3900c77"
-                        class="treatments-dashboard-table-row-1-block-6"
-                        >
-                        <div class="treatments-dashboard-table-column-label">
-                            Status
-                        </div>
-                        </div>
-                    </div>
                   <div class="treatments-dashboard-table-row-5">
                   <div class="treatments-dashboard-table-row-5-block-1">
                       <div class="treatments-dashboard-table-row-5-label">
-                          <a href="/health-care-provider/view-treatment.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>
+                          <a href="/health-care-provider/treatment-detail-accept.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>
                       </div>
                   </div>
                   <div id="w-node-f6533b15-1108-ca7c-8368-91a6c714355c-f6900c70" class="treatments-dashboard-table-row-5-block-2">
@@ -278,6 +241,9 @@ $(document).ready(function () {
               `;
         })
       );
+    },
+    error: function (err) {
+      console.log(err);
     },
   });
       $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {

@@ -2,6 +2,8 @@ window.addEventListener("load", runOnLoad);
 
 function runOnLoad() {
 
+  const token = localStorage.getItem("token");
+  $("body").prepend('<div class="error-message"></div>');
   
   $(".sign-out").click(function () {
     localStorage.clear();
@@ -9,16 +11,15 @@ function runOnLoad() {
     $(location).attr("href", loc);
   });
 
-  const username = document.querySelector(".userfullname");
+  const username = document.querySelector(".profile-avatar-title");
   const oldPassword = document.querySelector(".old-password");
   const newPassword = document.querySelector(".new-password");
   const confirmPassword = document.querySelector(".confirm-password");
   const errorMessage = document.querySelector(".error-message");
-  const submitBtn = document.querySelector(".bm");
+  const submitBtn = document.querySelector(".submit-password");
   const userData = JSON.parse(localStorage.getItem("data"));
 
   username.innerHTML = userData.fullName;
-  const token = localStorage.getItem("token");
 
   submitBtn.addEventListener("click", e => {
     e.preventDefault();
@@ -52,10 +53,13 @@ previousPassword: "${oldPassword.value}"
           errorMessage.animate({ top: "30px" }, 900, "linear");
           setTimeout(function () {
             errorMessage.style.display = "none";
-          }, 2000);
+          }, 6000);
           oldPassword.value = "";
           newPassword.value = "";
           confirmPassword.value = "";
+          localStorage.clear();
+          var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
+          $(location).attr("href", loc);
         },
 
         error: function (err) {

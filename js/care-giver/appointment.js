@@ -48,7 +48,7 @@ $(document).ready(function () {
 		);
 	});
 
-	$('body').prepend('<div class="error-message"></div>');s
+	$('body').prepend('<div class="error-message"></div>');
 	const token = localStorage.getItem('token');
 	const userData = JSON.parse(localStorage.getItem('data'));
 	if (!userData) {
@@ -57,6 +57,11 @@ $(document).ready(function () {
 	}
 	const userfullname = userData.fullName;
 	$('.userfullname').html(`${userfullname}`);
+
+
+	$("#w-dropdown-toggle-2").click(function() {
+		$("#w-dropdown-list-2").css("display", "block");
+	});
 
 	function showErrorMessageOnScreen(errorMessage, message, clear = true) {
 		errorMessage.css('display', 'block');

@@ -1,5 +1,8 @@
  var treatmentOption = "";
 
+ $("body").prepend('<div class="error-message"></div>');
+ $('.dropdown-list-2').html('');
+ $('.new-treatments-pharmacy-body-table-block').css('display', 'none');
  
  $(".sign-out").click(function () {
   localStorage.clear();

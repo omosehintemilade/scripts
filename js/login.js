@@ -1,5 +1,6 @@
 $(document).ready(function(){
 
+  $("body").prepend('<div class="error-message"></div>');
 var errorMessage = $('.error-message')
 
 $(".sign-out").click(function () {
@@ -93,7 +94,7 @@ $(".loginsubmit").click(function(event){
                     setTimeout(function(){ 
                       errorMessage.css("display", "none")
                     }, 2000)
-                    var loc = `${$(location).attr('origin')}/care-giver/treatments-main-dashboard`
+                    var loc = `${$(location).attr('origin')}/care-giver/treatments-main-dashboard.html`
                     $(location).attr('href',loc)
                 } else {
                   $(".loginsubmit").html("Login")
@@ -116,7 +117,7 @@ $(".loginsubmit").click(function(event){
                   
                   localStorage.setItem("data", JSON.stringify(result.data.login.data));
                   localStorage.setItem("token", JSON.stringify(result.data.login.token));
-                  var loc = `${$(location).attr('origin')}/health-care-provider/treatments-main-dashboard`
+                  var loc = `${$(location).attr('origin')}/health-care-provider/treatments-main-dashboard.html`
                   $(location).attr('href',loc)
               	}
             }

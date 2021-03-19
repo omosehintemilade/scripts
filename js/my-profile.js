@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+  $("body").prepend('<div class="error-message"></div>');
+  let token = localStorage.getItem("token");
   
     $(".sign-out").click(function () {
       localStorage.clear();
@@ -14,20 +16,56 @@ $(document).ready(function () {
                                     </option>`);
       });
     });
+
     
-    const prof_fullName = document.querySelector(".full-name");
-    const prof_dob = document.querySelector(".dob");
-    const prof_gender = document.querySelector(".gender");
-    const prof_country = document.querySelector(".congo");
-    const prof_address = document.querySelector(".address-text");
-    const prof_phone = document.querySelector(".phone");
-    const prof_email = document.querySelector(".email");
+    (function () {
+      $.ajax({
+        url: "https://aluuka-graph.herokuapp.com",
+        contentType: "application/json",
+        type: "POST",
+        headers: { authorization: `Bearer ${JSON.parse(token)}` },
+        data: JSON.stringify({
+          query: `
+        query{
+          getUserAccount
+          }
+              `,
+        }),
+        success: function (result) {
+          if (result.data.getUserAccount) {
+            const userInfo = result.data.getUserAccount;
+            console.log(userInfo);
+            $(".full-name").text(userInfo.fullName);
+            // $(".dob").text(userInfo.dob.slice(0, 10));
+            $(".gender").text(userInfo.gender);
+            $(".congo").text(userInfo.country);
+            $(".address-text").text(userInfo.address);
+            $(".phone").text(userInfo.phone);
+            $(".email").text(userInfo.email);
   
     const userData = JSON.parse(localStorage.getItem("data"));
     
-    prof_fullName.innerText = userData.fullName;
-    prof_email.innerText = userData.email;
-    let token = localStorage.getItem("token");
+    // prof_fullName.innerText = userData.fullName;
+    // prof_email.innerText = userData.email;
+            USER_IMAGE = userInfo.pictureURL || ""
+            $(".mpe-profile-image").attr("src", userInfo.pictureURL || "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png").css({ width: "200px", height: "200px", borderRadius: "100px" })
+  
+            if (userInfo.notificationChannel.includes("email")) {
+              $("#notfemail").click();
+            }
+  
+            if (userInfo.notificationChannel.includes("phone")) {
+              $("#notfphone").click();
+            }
+          }
+        },
+        error: function (err) {
+          console.log(err);
+        },
+      });
+    })();
+
+
     // alert(token);
     // REMOVE PRECEEDING & TRAILING QUOTE SYMBOLS
     // token = token.substring(1, token.length - 1);

@@ -1,5 +1,6 @@
 
 $(document).ready(function(){
+  $("body").prepend('<div class="error-message"></div>');
     $(".sign-out").click(function () {
       localStorage.clear();
       var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;

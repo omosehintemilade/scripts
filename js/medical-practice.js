@@ -1,5 +1,6 @@
 $(document).ready(function(){
 
+  $("body").prepend('<div class="error-message"></div>');
     var errorMessage = $('.error-message')
     
   $(".sign-out").click(function () {
