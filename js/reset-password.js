@@ -1,5 +1,4 @@
 $(document).ready(function () {
-<<<<<<< HEAD
 
   $("body").prepend('<div class="error-message"></div>');
     
@@ -8,10 +7,9 @@ $(document).ready(function () {
     var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
     $(location).attr("href", loc);
   });
-=======
-  var errorMessage = $(".error-message");
->>>>>>> e7ff7715f4be3f90eba365a88da56012b94ad1a0
 
+  var errorMessage = $(".error-message");
+  
   function getUrlVars() {
     var vars = [],
       hash;
@@ -21,20 +19,6 @@ $(document).ready(function () {
       vars.push(hash[0]);
       vars[hash[0]] = hash[1];
     }
-<<<<<<< HEAD
-
-  var token = getUrlVars()["token"];
-
-  $(".reset_password_btn").click(function (event) {
-    event.preventDefault();
-
-    const reset_password = $(".reset_password").val();
-    const reset_confirm_password = $(".reset_confirm_password").val();
-    const reset_token = token;
-
-    $(".reset_password_btn").html("Please wait...");
-
-=======
     return vars;
   }
   var token = getUrlVars()["token"];
@@ -48,7 +32,6 @@ $(document).ready(function () {
 
     $(".reset_password_btn").html("Please wait...");
 
->>>>>>> e7ff7715f4be3f90eba365a88da56012b94ad1a0
     if (reset_token === "") {
       $(".reset_password_btn").html("Reset Password");
       errorMessage.css("display", "block");
