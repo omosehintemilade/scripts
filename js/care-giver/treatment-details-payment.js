@@ -49,6 +49,8 @@ $(document).ready(function() {
 		  }
 	  }).render('#paypal-button-container');
 
+	  $("#paypal-button-container").css({ width: "100%", padding: "0 10px", maxWidth: "337px" })
+
 	const userfullname = userData.fullName;
 	$('.userfullname').html(`${userfullname}`);
 	var paypalType = false;
