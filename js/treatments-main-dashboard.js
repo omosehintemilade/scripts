@@ -42,7 +42,7 @@ $(document).ready(function () {
       query: `query {
                   listTreatments(
                       patientId: ""
-                      limit: 10
+                      limit: 20
                       lastId: ""
                   ) {
                     count
@@ -190,9 +190,9 @@ $(document).ready(function () {
           const date_treat = new Date(data.createdAt).toLocaleDateString("en-US", dateoptions);
           console.log(date_treat);
           var feenum = data.grandTotal - data.subTotal;
-          var nfee = feenum.toFixed(2);
+          var nfee = feenum.toFixed(2); 
           return `
-                  <div class="treatments-dashboard-table-row-5">
+                <div class="treatments-dashboard-table-row-5" style="margin-bottom:5px;">
                   <div class="treatments-dashboard-table-row-5-block-1">
                       <div class="treatments-dashboard-table-row-5-label">
                           <a href="/health-care-provider/treatment-detail-accept.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>
@@ -231,10 +231,18 @@ $(document).ready(function () {
                       <div class="treatments-dashboard-table-row-5-label">$${nfee}</div>
                   </div>
                   <div id="w-node-f6533b15-1108-ca7c-8368-91a6c7143572-f6900c70" class="treatments-dashboard-table-row-3-block-6">
-                          ${
-                        data.isCompleted
-                          ? `<a href="#" class="treatments-dashboard-table-row-5-button w-button">COMPLETED</a>`
-                          : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">PENDING</a>`
+                        ${
+                        data.isPaid
+                          ? `${
+                              data.isAccepted
+                                ? `${
+                                    data.isCompleted
+                                      ? `<a href="#" class="treatments-dashboard-table-row-5-button w-button">COMPLETED</a>`
+                                      : `<a href="#" class="treatments-dashboard-table-row-5-button w-button">ACCEPTED</a>`
+                                  }`
+                                : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">PENDING</a>`
+                            }`
+                          : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">UNPAID</a>`
                       }
                   </div>
               </div>
@@ -253,10 +261,4 @@ $(document).ready(function () {
         $(`${keyName}-show`).addClass("w--open");
       });
       console.log(JSON.stringify(treatment_list));
-//   console.log("One time", treatment_list);
-  /*$(".dropdown-toggle-4").click(function() {
-var className = $(this).attr("class");   
-var keyName = $(this).attr("key");
-alert(`${className} ${keyName}`);
-})*/
 });

@@ -53,7 +53,7 @@ $(document).ready(function () {
 	const token = localStorage.getItem('token');
 	const userData = JSON.parse(localStorage.getItem('data'));
 	if (!userData) {
-		var loc = `${$(location).attr('origin')}/care-giver/login.html`;
+		var loc = `${$(location).attr('origin')}/heath-care-provider/login.html`;
 		$(location).attr('href', loc);
 	}
 	const userfullname = userData.fullName;
@@ -140,11 +140,9 @@ $(document).ready(function () {
 			}),
 			success: function(result) {
 				return Promise.resolve(result);
-                console.log(result);
 			},
 			error: function(err) {
 				return Promise.reject(err);
-                console.log(result);
 			}
 		});
 	}
@@ -241,6 +239,7 @@ $(document).ready(function () {
 `
 			}),
 			success: function(result) {
+				// console.log(result);
 				let patientLists = result.data.listPatients.data;
 				$.map(patientLists, function(patient) {
 					$('.dropdown-list-2.w-dropdown-list').append(

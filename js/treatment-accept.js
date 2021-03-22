@@ -1,10 +1,12 @@
 $(document).ready(function () {
-    $("body").prepend('<div class="error-message"></div>');
-    $(".div-block-132").html("");
+    $("body").append('<div class="error-message"></div>');
+    
+
+    $(".treatment-detail-accept-form-entry-elements").html("");
     $(".treatment-detail-accept-form-entry-elements").css("width", "100%");
-    $(".treatment-details-accept-form-entry-total").prepend(`
-        <div class="start-end-form-group"><label for="start-time" class="cap-label">Start time</label><input type="date" class="start-time-field w-input" maxlength="256" name="start-time" data-name="start-time" placeholder="DD- MM- YYYY" id="start-time" required=""></div>
-        <div class="start-end-form-group"><label for="end-time" class="cap-label">End time</label><input type="date" class="start-time-field w-input" maxlength="256" name="start-time" data-name="start-time" placeholder="DD- MM- YYYY" id="start-time" required=""></div>
+    $(".div-block-131").prepend(`
+        <div class="start-end-form-group"><label for="start-time" class="cap-label">Start time</label><input type="datetime-local" class="start-time-field w-input" maxlength="256" name="start-time" data-name="start-time" placeholder="DD- MM- YYYY" id="start-time" required=""></div>
+        <div class="start-end-form-group"><label for="end-time" class="cap-label">End time</label><input type="datetime-local" class="end-time-field w-input" maxlength="256" name="start-time" data-name="start-time" placeholder="DD- MM- YYYY" id="start-time" required=""></div>
     `);
     $(".start-end-form-group").css({"width": "33%", "margin-right": "10px"});
     $(".treatment-details-1-from-total").css("text-align", "right");
@@ -52,7 +54,11 @@ $(document).ready(function () {
             getTreatmentById(id: "${treatmentID}"){
               patient{
                 fullName
+                id
               }
+              isPaid
+              isCompleted
+              isAccepted
               notes
               treatmentItems{
                 name
@@ -79,34 +85,43 @@ $(document).ready(function () {
         $(".health-care-provider-email").text(`${result.data.getHealthcareProviderById.email}`);
 
         // PATIENT
+        const patientId = result.data.getTreatmentById.patient.id;
         $(".patient-name").text(`${result.data.getTreatmentById.patient.fullName}`);
         $(".patient-email").text(`${result.data.getTreatmentById.patient.email}`);
         $(".treatment-date").text(`${result.data.getTreatmentById.patient.date}`);
         $(".treatment-note").text(`${result.data.getTreatmentById.notes || "No Notes"}`);
-        $(".treatment-details-1-from-total").text(`Total: ${result.data.getTreatmentById.grandTotal}`);
+        if (result.data.getTreatmentById.isCompleted){
+          $(".div-block-130 .tda-custom").text('Completed');
+        }
+        if (result.data.getTreatmentById.isAccepted){
+          $(".div-block-130 .tda-custom").text('Accepted');
+          $(".div-block-130 .tda-custom").css('display', 'none');
+        }
+        if (result.data.getTreatmentById.isPaid){
+          $(".div-block-130 .tda-custom").text('Paid');
+        }else{
+          $(".div-block-130 .tda-custom").text('Pending');
+        }
+        // $(".treatment-details-1-from-total").text(`Total: ${result.data.getTreatmentById.grandTotal}`);
         
 
         // TREATMENT
         $(".treatments-list-container").html("");
         $.map(result.data.getTreatmentById.treatmentItems, function (n, index) {
-          $(".treatment-detail-accept-2-form-entry-body").append(
-            `
-            
-            <div class="treatment-detail-accept-2-form-entry-body">
-            <div class="treatment-detail-accept-form-entry-elements">
-              <div class="div-block-132">
-                <div class="treatment-details-accept-form-entry-element-block">
-                  <div class="view-treatment-form-text-element-block">
-                    <div class="view-treatment-form-label">${n.name}</div>
-                    <div class="view-treatment-form-sub-label">${n.name}</div>
+          $(".treatment-detail-accept-form-entry-elements").append(
+            `<div class="div-block-132">
+                  <div class="treatment-details-accept-form-entry-element-block">
+                    <div class="view-treatment-form-text-element-block">
+                      <div class="view-treatment-form-label">${n.name}</div>
+                      <div class="view-treatment-form-sub-label">${n.name}</div>
+                    </div>
+                    <div class="view-treatment-form-price-label">${n.price}</div>
                   </div>
-                  <div class="view-treatment-form-price-label">${n.price}</div>
                 </div>
-              </div>
-              <div class="treatment-details-accept-horizontal-line"></div>
-              <div class="treatment-details-accept-form-entry-total">
-                <div class="treatment-details-1-from-total">${result.data.getTreatmentById.grandTotal}</div>
-              </div>
+                <div class="treatment-details-accept-horizontal-line"></div>
+                <div class="treatment-details-accept-form-entry-total">
+                  <div class="treatment-details-1-from-total">Total: ${result.data.getTreatmentById.grandTotal}</div>
+                </div>
             `
           );
         });
@@ -119,14 +134,64 @@ $(document).ready(function () {
         console.log(err);
       },
     });
+
+    $(".div-block-133 .tda-button-custom").click(function(e){
+      e.preventDefault();
+      const startTime = document.querySelector(".start-time-field").value;
+      const endTime = document.querySelector(".end-time-field").value;
+      var temp_startTime = new Date(startTime);
+      var temp_endTime = new Date(endTime);
+      formattedMonth1 = temp_startTime.toLocaleDateString(),
+      formattedTime1 = temp_startTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+      
+      formattedMonth2 = temp_endTime.toLocaleDateString(),
+      formattedTime2 = temp_endTime.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+      new_startTime = formattedMonth1 + " " + formattedTime1;
+      new_endTime = formattedMonth2 + " " + formattedTime2;
+      console.log(new_startTime, new_endTime);
+
+    $.ajax({
+      url: "https://aluuka-graph.herokuapp.com",
+      contentType: "application/json",
+      type: "POST",
+      headers: { authorization: `Bearer ${JSON.parse(token)}` },
+      data: JSON.stringify({
+        query: `mutation{
+          acceptTreatment(
+              id: "${treatmentID}"
+              startTime: "${new_startTime}"
+              endTime: "${new_endTime}"
+            ){
+              data
+            }
+          }
+            `,
+      }),
+      success: function (result) {
+          console.log(result);
+          $('.div-block-27').before(`
+          <div class="notification-popup-modal-elements-block">
+            <div class="notification-popup-modal-block-elements">
+              <div class="notification-popup-modal-elements-top-block">
+                <div class="div-top-block">
+                  <div class="text-bold">Treatment Accepted</div>
+                </div>
+                <div id="w-node-fa9bff8b-c301-ec58-aca7-0ede9014eeaf-04900c6a" data-w-id="fa9bff8b-c301-ec58-aca7-0ede9014eeaf" class="text-cancel"><span></span></div>
+              </div>
+              <img src="../images/wait.svg" loading="lazy" alt="" />
+              <a href="../health-care-provider/treatments-main-dashboard.html" class="new-treatment-popup-close-button w-button" style="padding: 10px; margin-top: 10px">Go to dashboard</a>
+            </div>
+          </div>`);
+      },
+      error: function (err) {
+        console.log(err);
+      },
+    });
+    })
+
   });
 
 
-
-
-
-
-    // output  "12/08/18"
     // Treatment List
     // $.ajax({
     //   url: "https://aluuka-graph.herokuapp.com",
@@ -136,7 +201,7 @@ $(document).ready(function () {
     //   data: JSON.stringify({
     //     query: `query {
     //                 listTreatments(
-    //                     patientId: ""
+    //                     patientId: "${patientId}"
     //                     limit: 10
     //                     lastId: ""
     //                 ) {
@@ -190,164 +255,29 @@ $(document).ready(function () {
     //   }),
     //   success: function (result) {
     //     console.log(result);
-    //     const treatment_count = result.data.listTreatments.count;
-    //     const payout_count = result.data.listTreatments.totalAmount;
-    //     const appointment_count = result.data.listAppointments.count;
-    //     var patient_list = result.data.listPatients.data;
-    //     var treatment_list = result.data.listTreatments.data;
-    //     for (i = 0; i < treatment_list.length; i++) {
-    //       console.log(treatment_list[i].patient.fullName);
-    //     }
-    //     console.log(treatment_list);
+    //     // const treatment_count = result.data.listTreatments.count;
+    //     // const payout_count = result.data.listTreatments.totalAmount;
+    //     // const appointment_count = result.data.listAppointments.count;
+    //     // var patient_list = result.data.listPatients.data;
+    //     // var treatment_list = result.data.listTreatments.data;
+    //     // for (i = 0; i < treatment_list.length; i++) {
+    //     //   console.log(treatment_list[i].patient.fullName);
+    //     // }
+    //     // console.log(treatment_list);
         
-    //     $(".total-appointment").html(appointment_count);
-    //     $(".total-payout").html(payout_count);
-    //     $(".total-treatment").html(treatment_count);
-      
-    //     // APPEND PATIENT LIST TO TEMPLATE
-    //     $.map(patient_list, function (patient, index) {
-    //       $(".pat_list").append(`<a href="#${patient.id}" class="dropdown-link-3 w-dropdown-link">${patient.fullName}</a>`);
-    //     });
-    //     //
-  
-    //     if (Array.isArray(treatment_list) && !treatment_list.length) {
-    //       $(".pat-list").html(`
-    //           <div class="treatments-dashboard-table-row-1">
-    //           <div class="treatments-dashboard-table-row-1-block-1">
-    //               <div class="treatments-dashboard-table-column-label">
-    //               Patient Name
-    //               </div>
-    //           </div>
-    //           <div
-    //               id="w-node-e6bbbcb8-82ce-bf78-56df-d683a55d83a1-c3900c77"
-    //               class="treatments-dashboard-table-row-1-block-2"
-    //           >
-    //               <div class="treatments-dashboard-table-column-label">Date</div>
-    //           </div>
-    //           <div
-    //               id="w-node-cc1ab0bc-be93-b387-bb74-33198ef75f23-c3900c77"
-    //               class="treatments-dashboard-table-row-1-block-4"
-    //           >
-    //               <div class="treatments-dashboard-table-column-label">
-    //               Treatment
-    //               </div>
-    //           </div>
-    //           <div class="treatments-dashboard-table-row-1-block-3">
-    //               <div class="treatments-dashboard-table-column-label">Cost</div>
-    //           </div>
-    //           <div
-    //               id="w-node-c214a8f0-05fb-acab-aaa0-96ce3b328417-c3900c77"
-    //               class="treatments-dashboard-table-row-1-block-5"
-    //           >
-    //               <div class="treatments-dashboard-table-column-label">
-    //               Payment Status
-    //               </div>
-    //           </div>
-    //           <div
-    //               id="w-node-e5139410-fc55-d579-1749-60360008d427-c3900c77"
-    //               class="treatments-dashboard-table-row-1-block-6"
-    //           >
-    //               <div class="treatments-dashboard-table-column-label">
-    //               Status
-    //               </div>
-    //           </div>
-    //           </div>
-    //           <br>
-    //         <div class="empty-state-1-body">
-    //         <div class="empty-state-1-body-elements">
-    //             <img src="https://uploads-ssl.webflow.com/5fe9d2f67366097441900c56/5fe9d2f67366093bd9900ca7_Group%205302.png" loading="lazy" width="297" alt="" />
-    //             <div class="emply-state-header">You have no Treatment</div>
-    //             <div class="empty-state-subheader">Click to add a new Treatment</div>
-    //             <a href="../health-care-provider/new-treatment-laboratory.html" class="button-medium-stretch w-button">Create Treatment</a>
-    //         </div>
-    //         </div>
-    //     `);
-    //       return false;
-    //     }
-        
-    //     $(".treat_num").html(`${result.data.listTreatments.count}`);
-  
-    //     // updateTreatmentTable(treatment_list);
-  
-    //     // Total Payout
-    //     $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
-    //     // Appointments Count
-    //     $(".total appointment").text(`${result.data.listAppointments.count}`);
-    //     $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
-    //       var className = $(this).attr("class");
-    //       var keyName = $(this).attr("key");
-    //       alert(`${className} ${keyName}`);
-    //       $(`${keyName}-show`).addClass("w--open");
-    //     });
-    //     console.log(JSON.stringify(treatment_list));
-    //     $(".pat-list").html(
-    //       $.map(treatment_list, function (data) {
-    //         const date_treat = new Date(data.createdAt).toLocaleDateString("en-US", dateoptions);
-    //         console.log(date_treat);
-    //         var feenum = data.grandTotal - data.subTotal;
-    //         var nfee = feenum.toFixed(2);
-    //         return `
-    //                 <div class="treatments-dashboard-table-row-5">
-    //                 <div class="treatments-dashboard-table-row-5-block-1">
-    //                     <div class="treatments-dashboard-table-row-5-label">
-    //                         <a href="/health-care-provider/treatment-detail-accept.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>
-    //                     </div>
-    //                 </div>
-    //                 <div id="w-node-f6533b15-1108-ca7c-8368-91a6c714355c-f6900c70" class="treatments-dashboard-table-row-5-block-2">
-    //                     <div class="treatments-dashboard-table-row-5-label">${date_treat}</div>
-    //                 </div>
-    //                 <div class="treatments-dashboard-table-row-5-block-3">
-    //                     <div class="treatments-dashboard-table-row-5-label">${data.healthcareProvider}</div>
-    //                 </div>
-    //                 <div id="w-node-f6533b15-1108-ca7c-8368-91a6c7143562-f6900c70" class="treatments-dashboard-table-row-5-block-4">
-    //                     <div data-hover="" data-delay="20" class="w-dropdown">
-    //                         <div class="dropdown-toggle-4 w-dropdown-toggle" key="${
-    //                           data.id
-    //                         }" id="w-dropdown-toggle-10" aria-controls="w-dropdown-list-10" aria-haspopup="menu" aria-expanded="false" role="button" tabindex="0">
-    //                             <div class="icon-27 w-icon-dropdown-toggle"></div>
-    //                             <div>View</div>
-    //                         </div>
-    //                         <nav class="dropdown-list-3 w-dropdown-list ${data.id}-show" id="w-dropdown-list-10" aria-labelledby="w-dropdown-toggle-10">
-    //                             <div class="div-block-143">
-    //                                 <a href="#" class="table-dropdown-link-3 w-dropdown-link" tabindex="0">Treatment</a>
-    //                                 <div class="table-dropdown-link-3-sub">$1400</div>
-    //                             </div>
-    //                             ${$.map(data.treatmentItems, function (treat_data) {
-    //                               `<div class="div-block-143">
-    //                                     <a href="#" class="table-dropdown-link-3-plain w-dropdown-link" tabindex="0">${treat_data.name}</a>
-    //                                     <div class="table-dropdown-link-3-plain-sub">$${treat_data.price}.00</div>
-    //                                 </div>
-    //                                 `;
-    //                             })}
-    //                         </nav>
-    //                     </div>
-    //                 </div>
-    //                 <div id="w-node-f6533b15-1108-ca7c-8368-91a6c714356f-f6900c70" class="treatments-dashboard-table-row-5-block-5">
-    //                     <div class="treatments-dashboard-table-row-5-label">$${nfee}</div>
-    //                 </div>
-    //                 <div id="w-node-f6533b15-1108-ca7c-8368-91a6c7143572-f6900c70" class="treatments-dashboard-table-row-3-block-6">
-    //                         ${
-    //                       data.isCompleted
-    //                         ? `<a href="#" class="treatments-dashboard-table-row-5-button w-button">COMPLETED</a>`
-    //                         : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">PENDING</a>`
-    //                     }
-    //                 </div>
-    //             </div>
-    //             `;
-    //       })
-    //     );
-    //   },
+    //       },
     //   error: function (err) {
     //     console.log(err);
-    //   },
+    //   }
     // });
+    
         $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
           var className = $(this).attr("class");
           var keyName = $(this).attr("key");
           alert(`${className} ${keyName}`);
           $(`${keyName}-show`).addClass("w--open");
         });
-        console.log(JSON.stringify(treatment_list));
+        // console.log(JSON.stringify(treatment_list));
   //   console.log("One time", treatment_list);
     /*$(".dropdown-toggle-4").click(function() {
   var className = $(this).attr("class");   

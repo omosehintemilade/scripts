@@ -113,7 +113,7 @@ $(document).ready(function () {
       if (Array.isArray(treatment_list) && !treatment_list.length) {
         //var loc = `${$(location).attr('origin')}/empty-states/empty-state-1`
         //$(location).attr('href',loc)
-        $(".payments-dashboard-table-div-block").html(`
+        $(".payments-dashboard-filter-div-block").html(`
             <div class="treatments-dashboard-table-row-1">
             <div class="treatments-dashboard-table-row-1-block-1">
                 <div class="treatments-dashboard-table-column-label">
@@ -185,7 +185,7 @@ $(document).ready(function () {
     },
     error: function (err) {
       console.log(err);
-      $(".treatment_list_table").html(
+      $(".payments-dashboard-filter-div-block").html(
         $.map(treatment_list, function (data) {
           const date_treat = new Date(data.createdAt).toLocaleDateString("en-US", dateoptions);
           console.log(date_treat);

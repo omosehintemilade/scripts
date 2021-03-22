@@ -226,7 +226,7 @@ $(document).ready(function () {
             address: "${address}"
             phone: "${phone}"
             email: "${email}"
-            notificationChannel: "[email, phone]"
+            notificationChannel: [email, phone]
           ) {
             success
             message
