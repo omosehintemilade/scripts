@@ -34,7 +34,7 @@ $(document).ready(function(){
             return false;
         }
         console.log("loading....")
-        $.ajax({url: "https://aluuka-graph.herokuapp.com",
+        $.ajax({url: CONSTANTS.baseUrl,
             contentType: "application/json",
             type:'POST',
             data: JSON.stringify({ query: `mutation {
