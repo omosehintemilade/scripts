@@ -1,5 +1,6 @@
 $(document).ready(function () {
   const userData = JSON.parse(localStorage.getItem("data"));
+  console.log(userData)
   //console.log(userData);
   if (!userData) {
     var loc = `${$(location).attr("origin")}/care-giver/login.html`;
@@ -7,6 +8,22 @@ $(document).ready(function () {
   }
   $(".userfullname").html(`${userData.fullName}`);
   $(".prof_fullname").attr("placeholder", `${userData.fullName}`);
+
+  $("#Sex-Field-2").html(`
+  <option value="male">Male</option>
+  <option value="female">Female</option>
+  `);
+  $("#Sex-Field-2").val(userData.gender);
+
+  $.get("https://restcountries.eu/rest/v2/all").done(function (data) {
+    data.map(function (i) {
+      $("#Country-field-2").append(`<option value="${i.name}"> 
+                                 ${i.name} 
+                            </option>`);
+    });
+  });
+
+  $("#Country-field-2").val(userData.country);
   const options = {
     weekday: "short",
     year: "numeric",
@@ -21,4 +38,8 @@ $(document).ready(function () {
   $(".image-5")
     .attr("src", userData.pictureURL || "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png")
     .css({ width: "100px", height: "100px", borderRadius: "50px" });
+
+
+    // DISABLE ALL INPUTE
+    $('input, select').attr('disabled', 'disabled');
 });

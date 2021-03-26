@@ -624,7 +624,7 @@ $(document).ready(function () {
                                 ? `${
                                     data.isCompleted
                                       ? `<a href="#" class="treatments-dashboard-table-row-5-button w-button">COMPLETED</a>`
-                                      : `<a href="#" class="treatments-dashboard-table-row-5-button w-button">INCOMPLETE</a>`
+                                      : `<a href="#" class="treatments-dashboard-table-row-5-button w-button">ACCEPTED</a>`
                                   }`
                                 : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">PENDING</a>`
                             }`
