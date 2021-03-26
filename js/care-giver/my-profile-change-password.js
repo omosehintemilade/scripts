@@ -81,7 +81,8 @@ $(document).ready(function () {
             errorMessage.css("display", "none");
           }, 2000);
           localStorage.setItem("data", JSON.stringify(result.data.updatePassword.data));
-          var loc = `${$(location).attr("origin")}/care-giver/treatments-main-dashboard.html`;
+          localStorage.removeItem("data")
+          var loc = `${$(location).attr("origin")}/care-giver/login.html`;
           $(location).attr("href", loc);
         }
         console.log(JSON.stringify(result.data));
