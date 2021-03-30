@@ -96,7 +96,7 @@ $(document).ready(function () {
       const totalTransactions = result.data.listTreatments.data.length;
       const totalPayout = result.data.listTreatments.totalAmount;
       let patient_list = result.data.listPatients.data;
-      let treatment_list = result.data.listTreatments.data;
+      const treatment_list = result.data.listTreatments.data;
 
       
       $(".total-transactions").html(totalTransactions);
@@ -169,22 +169,14 @@ $(document).ready(function () {
       
       $(".treat_num").html(`${result.data.listTreatments.count}`);
 
-      updateTreatmentTable(treatment_list);
+      // updateTreatmentTable(treatment_list);
 
       // Total Payout
       $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
       // Appointments Count
       $(".total appointment").text(`${result.data.listAppointments.count}`);
-      $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
-        var className = $(this).attr("class");
-        var keyName = $(this).attr("key");
-        alert(`${className} ${keyName}`);
-        $(`${keyName}-show`).addClass("w--open");
-      });
-      //console.log(JSON.stringify(treatment_list));
-    },
-    error: function (err) {
-      console.log(err);
+      //update treatment table
+      
       $(".payments-dashboard-filter-div-block").html(
         $.map(treatment_list, function (data) {
           const date_treat = new Date(data.createdAt).toLocaleDateString("en-US", dateoptions);
@@ -281,6 +273,16 @@ $(document).ready(function () {
               `;
         })
       );
+      $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
+        var className = $(this).attr("class");
+        var keyName = $(this).attr("key");
+        alert(`${className} ${keyName}`);
+        $(`${keyName}-show`).addClass("w--open");
+      });
+      //console.log(JSON.stringify(treatment_list));
+    },
+    error: function (err) {
+      console.log(err);
     },
   });
       $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
@@ -289,7 +291,7 @@ $(document).ready(function () {
         alert(`${className} ${keyName}`);
         $(`${keyName}-show`).addClass("w--open");
       });
-      console.log(JSON.stringify(treatment_list));
+      // console.log(JSON.stringify(treatment_list));
 //   console.log("One time", treatment_list);
   /*$(".dropdown-toggle-4").click(function() {
 var className = $(this).attr("class");   

@@ -182,7 +182,7 @@
                 );
                 var loc = `${$(location).attr(
                   "origin"
-                )}/hospital-care-provider/profile.html`;
+                )}/health-care-provider/profile.html`;
                 $(location).attr("href", loc);
               }
               console.log(JSON.stringify(result.data));
@@ -263,6 +263,14 @@
                 setTimeout(function () {
                   errorMessage.css("display", "none");
                 }, 2000);
+                localStorage.setItem(
+                  "data",
+                  JSON.stringify(result.data.onboardingChooseRole.data)
+                );
+                var loc = `${$(location).attr(
+                  "origin"
+                )}/health-care-provider/profile.html`;
+                $(location).attr("href", loc);
               }
               console.log(JSON.stringify(result.data));
             },
@@ -342,6 +350,14 @@
                 setTimeout(function () {
                   errorMessage.css("display", "none");
                 }, 2000);
+                localStorage.setItem(
+                  "data",
+                  JSON.stringify(result.data.onboardingChooseRole.data)
+                );
+                var loc = `${$(location).attr(
+                  "origin"
+                )}/health-care-provider/profile.html`;
+                $(location).attr("href", loc);
               }
               console.log(JSON.stringify(result.data));
             },

@@ -108,7 +108,7 @@ $(document).ready(function(){
                         errorMessage.css("display", "none")
                     }, 2000)
                     
-                    var loc = `${$(location).attr('origin')}/hospital-care-provider/payout-information`
+                    var loc = `${$(location).attr('origin')}/health-care-provider/payout-information.html`
                                     $(location).attr('href',loc)
                 }
                 console.log(JSON.stringify(result.data))
