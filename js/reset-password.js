@@ -1,6 +1,6 @@
 $(document).ready(function () {
   var errorMessage = $(".error-message");
-
+  
   function getUrlVars() {
     var vars = [],
       hash;

@@ -57,6 +57,7 @@ $("#notfphone").click(function (event) {
 */
 
 let USER_IMAGE;
+let USER_DOB
 
 $(".image-3").attr("src", "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png").css({ width: "200px", height: "200px", borderRadius: "100px" });
 
@@ -93,6 +94,53 @@ $("#change_img").change(function (e) {
     });
 });
 
+(function () {
+    $.ajax({
+      url: CONSTANTS.baseUrl,
+      contentType: "application/json",
+      type: "POST",
+      headers: { authorization: `Bearer ${JSON.parse(token)}` },
+      data: JSON.stringify({
+        query: `
+      query{
+        getUserAccount
+        }
+            `,
+      }),
+      success: function (result) {
+        if (result.data.getUserAccount) {
+          const userInfo = result.data.getUserAccount;
+          console.log(userInfo);
+          $(".onboarding_complete_fullname").val(userInfo.fullName);
+          $(".onboarding_complete_email").val(userInfo.email);
+        }
+      },
+      error: function (err) {
+        console.log(err);
+      },
+    });
+  })();
+
+  // CREATE FILTER BY DATE INPUT ELEMENT
+  function initiateOrResetDateInput(){
+    $("#date-2").replaceWith(
+      `<input
+      id="selectDateElement"
+      type="text"
+      class="w-input"
+      style="margin: auto;"
+      placeholder="Enter Date" 
+      onfocus="(this.type='date')" 
+      onblur="if(this.value==''){this.type='text'}">`)
+    }
+    initiateOrResetDateInput()
+
+    
+    $("#selectDateElement").change(function(event) {
+        let date = new Date(event.target.value)
+        USER_DOB = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`
+});
+
 // Complete Profile
 $(".onboard-comp-submit").click(function (event) {
     event.preventDefault();
@@ -105,7 +153,7 @@ $(".onboard-comp-submit").click(function (event) {
     const email = $(".onboarding_complete_email").val();
     $(".onboard-comp-submit").text("Please wait....");
     console.log("main trial", notf);
-    if (fullName === "" || dob === "" || gender === "" || country === "" || address === "" || phone === "" || email === "") {
+    if (fullName === "" || gender === "" || country === "" || address === "" || phone === "" || email === "") {
     $(".onboard-comp-submit").text("Next: Patient Information");
     errorMessage.css("display", "block");
     errorMessage.css("background", "#c62828");
@@ -133,7 +181,7 @@ $(".onboard-comp-submit").click(function (event) {
         query: `mutation ($notificationChannel: [NotificationChannel]!){
                                     onboardingCompleteProfile(
                                         fullName: "${fullName}"
-                                        dob: "${valid_date}"
+                                        dob: "${USER_DOB || valid_date}"
                                         gender: "${gender}"
                                         country: "${country}"
                                         address: "${address}"

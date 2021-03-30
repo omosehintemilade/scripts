@@ -6,6 +6,7 @@ function setTreatmentOption(val) {
 }
 
 $(document).ready(function () {
+  
   const token = localStorage.getItem("token");
   var errorMessage = $(".error-message");
   var treate_data = $(".treate_data");
@@ -37,31 +38,76 @@ $(document).ready(function () {
   }
   var patient_name = getUrlVars()["patient_name"];
   var patient_id = getUrlVars()["patient_id"];
-  const treatment_laboratory_category_data = [
-    { title: "blood count" },
-    { title: "urinalysis" },
-    { title: "cholesterol tests" },
-    { title: "spinal fluid analysis" },
-    { title: "liver function tests" },
-  ];
-  const blood_count_data = [
-    { name: "blood count" },
-    { name: "blood count" },
-    { name: "blood count" },
-    { name: "blood count" },
-    { name: "blood count" },
-    { name: "blood count" },
-  ];
-  treatment_laboratory_category_data.map(function (i) {
-    $(".add_treatment_category").append(`<option value="${i.title}"> ${i.title.toUpperCase()} </option>`);
-  });
-  $(".add_treatment_category").on("change", function () {
-    if (this.value === "blood count") {
-      blood_count_data.map(function (i) {
-        $(".add_treatment_name").append(`<option value="${i.name}"> ${i.name.toUpperCase()} </option>`);
+
+
+  let treatment_laboratory_category_data
+  let treatment_subCategory
+  let TREAMENT_CATEGORY_SELECTED_INDEX
+  let TREAMENT_SUBCATEGORY_SELECTED
+
+    // Patient List
+    $.ajax({
+      url: CONSTANTS.baseUrl,
+      contentType: "application/json",
+      type: "POST",
+      headers: { authorization: `Bearer ${JSON.parse(token)}` },
+      data: JSON.stringify({
+        query: `query{
+          listTreatmentCategory{
+            status
+            data{
+              name
+              description
+              subCategory
+            }
+          }
+        }`,
+      }),
+      success: function (result) {
+        console.log(result)
+
+        treatment_laboratory_category_data = result.data.listTreatmentCategory.data;
+        treatment_laboratory_category_data.forEach(function (data) {
+          $(".add_treatment_category").append(`<option value="${data.name}"> ${data.name.toUpperCase()} </option>`);
+        });
+      },
+      error: function (err) {
+        console.log(err);
+      },
+    });
+
+  
+
+  $(".add_treatment_category").on("change", function (el) {
+    treatment_laboratory_category_data.forEach(function(data, index){
+      if(data.name == el.target.value){
+        TREAMENT_CATEGORY_SELECTED_INDEX = index
+        treatment_subCategory = data.subCategory
+      }
+    })
+    console.log(treatment_subCategory)
+    $(".add_treatment_name").html('<option>--Select Treatment</option>')
+      treatment_subCategory.map(function (i) {
+        $(".add_treatment_name").append(`<option value="${i.treatmentName}"> ${i.treatmentName.toUpperCase()} </option>`);
       });
-    }
   });
+
+  $(".add_treatment_name").on("change", function (el) {
+    TREAMENT_SUBCATEGORY_SELECTED = el.target.value
+
+    treatment_laboratory_category_data[TREAMENT_CATEGORY_SELECTED_INDEX].subCategory.forEach((treatment) => {
+      if(treatment.treatmentName == TREAMENT_SUBCATEGORY_SELECTED){
+        setTreamentDescriptionAndCost(treatment.treatmentDescription, treatment.amount)
+      }
+    })
+
+  })
+
+  function setTreamentDescriptionAndCost(description, cost){
+    $("#Field-Additional-Description").val(description)
+    $("#Field-2-Cost").val(cost)
+  }
+
   var treatment_data = [];
   // Create Treatment
   $(".creat_treat").click(function (event) {
