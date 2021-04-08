@@ -3,6 +3,14 @@ $(document).ready(function(){
   $("body").prepend('<div class="error-message"></div>');
 var errorMessage = $('.error-message')
 
+const token = localStorage.getItem("token");
+const userData = JSON.parse(localStorage.getItem("data"));
+
+if (userData) {
+  var loc = `${$(location).attr("origin")}/health-care-provider/treatments-main-dashboard.html`;
+  $(location).attr("href", loc);
+}
+
 $(".sign-out").click(function () {
   localStorage.clear();
   var loc = `${$(location).attr("origin")}/health-care-provider/login.html`;
