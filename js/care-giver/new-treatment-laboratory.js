@@ -2,11 +2,12 @@ var treatmentOption = "Laboratory";
 function setTreatmentOption(val) {
   treatmentOption = val;
   $(".treatment-option-val").text(`${treatmentOption}`);
-  $(".new-treatments-laboratory-patient-dropdown-list-2.w-dropdown-list.w--open").removeClass("w--open");
+  $(
+    ".new-treatments-laboratory-patient-dropdown-list-2.w-dropdown-list.w--open"
+  ).removeClass("w--open");
 }
 
 $(document).ready(function () {
-  
   const token = localStorage.getItem("token");
   var errorMessage = $(".error-message");
   var treate_data = $(".treate_data");
@@ -28,7 +29,9 @@ $(document).ready(function () {
   function getUrlVars() {
     var vars = [],
       hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf("?") + 1).split("&");
+    var hashes = window.location.href
+      .slice(window.location.href.indexOf("?") + 1)
+      .split("&");
     for (var i = 0; i < hashes.length; i++) {
       hash = hashes[i].split("=");
       vars.push(hash[0]);
@@ -39,20 +42,19 @@ $(document).ready(function () {
   var patient_name = getUrlVars()["patient_name"];
   var patient_id = getUrlVars()["patient_id"];
 
+  let treatment_laboratory_category_data;
+  let treatment_subCategory;
+  let TREAMENT_CATEGORY_SELECTED_INDEX;
+  let TREAMENT_SUBCATEGORY_SELECTED;
 
-  let treatment_laboratory_category_data
-  let treatment_subCategory
-  let TREAMENT_CATEGORY_SELECTED_INDEX
-  let TREAMENT_SUBCATEGORY_SELECTED
-
-    // Patient List
-    $.ajax({
-      url: CONSTANTS.baseUrl,
-      contentType: "application/json",
-      type: "POST",
-      headers: { authorization: `Bearer ${JSON.parse(token)}` },
-      data: JSON.stringify({
-        query: `query{
+  // Patient List
+  $.ajax({
+    url: CONSTANTS.baseUrl,
+    contentType: "application/json",
+    type: "POST",
+    headers: { authorization: `Bearer ${JSON.parse(token)}` },
+    data: JSON.stringify({
+      query: `query{
           listTreatmentCategory{
             status
             data{
@@ -61,51 +63,60 @@ $(document).ready(function () {
               subCategory
             }
           }
-        }`,
-      }),
-      success: function (result) {
-        console.log(result)
+        }`
+    }),
+    success: function (result) {
+      console.log(result);
 
-        treatment_laboratory_category_data = result.data.listTreatmentCategory.data;
-        treatment_laboratory_category_data.forEach(function (data) {
-          $(".add_treatment_category").append(`<option value="${data.name}"> ${data.name.toUpperCase()} </option>`);
-        });
-      },
-      error: function (err) {
-        console.log(err);
-      },
-    });
-
-  
+      treatment_laboratory_category_data =
+        result.data.listTreatmentCategory.data;
+      treatment_laboratory_category_data.forEach(function (data) {
+        $(".add_treatment_category").append(
+          `<option value="${data.name}"> ${data.name.toUpperCase()} </option>`
+        );
+      });
+    },
+    error: function (err) {
+      console.log(err);
+    }
+  });
 
   $(".add_treatment_category").on("change", function (el) {
-    treatment_laboratory_category_data.forEach(function(data, index){
-      if(data.name == el.target.value){
-        TREAMENT_CATEGORY_SELECTED_INDEX = index
-        treatment_subCategory = data.subCategory
+    treatment_laboratory_category_data.forEach(function (data, index) {
+      if (data.name == el.target.value) {
+        TREAMENT_CATEGORY_SELECTED_INDEX = index;
+        treatment_subCategory = data.subCategory;
       }
-    })
-    console.log(treatment_subCategory)
-    $(".add_treatment_name").html('<option>--Select Treatment</option>')
-      treatment_subCategory.map(function (i) {
-        $(".add_treatment_name").append(`<option value="${i.treatmentName}"> ${i.treatmentName.toUpperCase()} </option>`);
-      });
+    });
+    console.log(treatment_subCategory);
+    $(".add_treatment_name").html("<option>--Select Treatment</option>");
+    treatment_subCategory.map(function (i) {
+      $(".add_treatment_name").append(
+        `<option value="${
+          i.treatmentName
+        }"> ${i.treatmentName.toUpperCase()} </option>`
+      );
+    });
   });
 
   $(".add_treatment_name").on("change", function (el) {
-    TREAMENT_SUBCATEGORY_SELECTED = el.target.value
+    TREAMENT_SUBCATEGORY_SELECTED = el.target.value;
 
-    treatment_laboratory_category_data[TREAMENT_CATEGORY_SELECTED_INDEX].subCategory.forEach((treatment) => {
-      if(treatment.treatmentName == TREAMENT_SUBCATEGORY_SELECTED){
-        setTreamentDescriptionAndCost(treatment.treatmentDescription, treatment.amount)
+    treatment_laboratory_category_data[
+      TREAMENT_CATEGORY_SELECTED_INDEX
+    ].subCategory.forEach((treatment) => {
+      if (treatment.treatmentName == TREAMENT_SUBCATEGORY_SELECTED) {
+        setTreamentDescriptionAndCost(
+          treatment.treatmentDescription,
+          treatment.amount
+        );
       }
-    })
+    });
+  });
 
-  })
-
-  function setTreamentDescriptionAndCost(description, cost){
-    $("#Field-Additional-Description").val(description)
-    $("#Field-2-Cost").val(cost)
+  function setTreamentDescriptionAndCost(description, cost) {
+    $("#Field-Additional-Description").val(description);
+    $("#Field-2-Cost").val(cost);
   }
 
   var treatment_data = [];
@@ -164,8 +175,8 @@ $(document).ready(function () {
         }
       }`,
         variables: {
-          treatmentItemInput: treatment_data,
-        },
+          treatmentItemInput: treatment_data
+        }
       }),
       success: function (result) {
         if (!result.data.createTreatment.success) {
@@ -197,15 +208,17 @@ $(document).ready(function () {
           setTimeout(function () {
             errorMessage.css("display", "none");
           }, 2000);
-          var loc = `${$(location).attr("origin")}/care-giver/treatment-details-payment.html?treatment_id=${result.data.createTreatment.data.id}&hcp_id=${
-            result.data.createTreatment.data.healthcareProviderId
-          }`;
+          var loc = `${$(location).attr(
+            "origin"
+          )}/care-giver/treatment-details-payment.html?treatment_id=${
+            result.data.createTreatment.data.id
+          }&hcp_id=${result.data.createTreatment.data.healthcareProviderId}`;
           $(location).attr("href", loc);
         }
       },
       error: function (err) {
         console.log("err:", err);
-      },
+      }
     });
   });
   // Patient List
@@ -218,7 +231,7 @@ $(document).ready(function () {
       query: `query { listPatients( lastId: "" limit: 100 ) {
                                     data {
                                       id fullName gender
-                                    }}}`,
+                                    }}}`
     }),
     success: function (result) {
       const patient_list = result.data.listPatients.data;
@@ -231,17 +244,23 @@ $(document).ready(function () {
     },
     error: function (err) {
       console.log(err);
-    },
+    }
   });
   var count = "";
   // Add treatment
   $(".add_treatment_submit").click(function (event) {
     event.preventDefault();
-    const treatment_name = $("select.add_treatment_name option").filter(":selected").val();
+    const treatment_name = $("select.add_treatment_name option")
+      .filter(":selected")
+      .val();
     const treatment_description = $(".add_treatment_description").val();
     const treatment_cost = $(".add_treatment_cost").val();
     $(".add_treatment_submit").html("Please wait....");
-    if (treatment_name === "" || treatment_description === "" || treatment_cost === "") {
+    if (
+      treatment_name === "" ||
+      treatment_description === "" ||
+      treatment_cost === ""
+    ) {
       $(".add_treatment_submit").html("Add");
       errorMessage.css("display", "block");
       errorMessage.css("background", "#c62828");
@@ -257,7 +276,12 @@ $(document).ready(function () {
       }, 2000);
       return false;
     }
-    const new_data = { name: treatment_name, description: treatment_description, quantity: 1, price: Number(treatment_cost) };
+    const new_data = {
+      name: treatment_name,
+      description: treatment_description,
+      quantity: 1,
+      price: Number(treatment_cost)
+    };
     treatment_data.push(new_data);
     console.log("new_data", new_data);
     console.log("treatment_data", treatment_data);

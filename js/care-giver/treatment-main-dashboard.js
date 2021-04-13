@@ -1,6 +1,6 @@
 $(document).ready(function () {
   //INIT FUNC
-  window.loadTreatmentsByFilterListener = function (type, value, extra=null) {
+  window.loadTreatmentsByFilterListener = function (type, value, extra = null) {
     loadTreatmentsByFilter(type, value, extra);
   };
 
@@ -12,60 +12,63 @@ $(document).ready(function () {
   });
 
   // CREATE FILTER BY DATE INPUT ELEMENT
-  function initiateOrResetDateInput(){
-  $("#w-node-_7df383e7-b6f2-73a4-47b3-07dbb32cfa2f-f6900c70").html(
-    `<input
+  function initiateOrResetDateInput() {
+    $("#w-node-_7df383e7-b6f2-73a4-47b3-07dbb32cfa2f-f6900c70").html(
+      `<input
     id="filterByDateElement"
     type="text"
     class="w-input"
     style="margin: auto;"
     placeholder="Enter Date" 
     onfocus="(this.type='date')" 
-    onblur="if(this.value==''){this.type='text'}">`)
+    onblur="if(this.value==''){this.type='text'}">`
+    );
   }
-  initiateOrResetDateInput()
+  initiateOrResetDateInput();
 
-    
-    $("#filterByDateElement").change(function(dateText) {
-          loadTreatmentsByFilter("date", this.value, "single")
+  $("#filterByDateElement").change(function (dateText) {
+    loadTreatmentsByFilter("date", this.value, "single");
   });
 
+  function setTimelineFiterSelectableOption(value) {
+    const domToEffectChange = [
+      ".treatments-summary-tab-1-dropdown-toggle-3.w-dropdown-toggle > div + div",
+      ".treatments-summary-tab-2-dropdown-toggle-3.w-dropdown-toggle > div + div",
+      ".treatments-summary-tab-3-dropdown-toggle-3.w-dropdown-toggle > div + div"
+    ];
+    $.map(domToEffectChange, function (dom) {
+      $(dom).html(value);
+    });
+  }
 
-    function setTimelineFiterSelectableOption(value){
-      const domToEffectChange = [
-        ".treatments-summary-tab-1-dropdown-toggle-3.w-dropdown-toggle > div + div",
-        ".treatments-summary-tab-2-dropdown-toggle-3.w-dropdown-toggle > div + div",
-        ".treatments-summary-tab-3-dropdown-toggle-3.w-dropdown-toggle > div + div",
-      ]
-      $.map(domToEffectChange, function(dom){
-        $(dom).html(value)
-      })
-    }
+  // CREATE TIMELINE FILTER SELECTABLE OPTION
+  const defaultPossibleFilterableOption = [
+    { option: "All Time", query: "" },
+    { option: "This Month", query: "month" },
+    { option: "This Week", query: "week" }
+  ];
 
-    // CREATE TIMELINE FILTER SELECTABLE OPTION
-    const defaultPossibleFilterableOption = [ {option: "All Time", query: ""}, {option: "This Month", query: "month"}, {option: "This Week", query: "week"} ]
+  // Set Default to "All Time"
+  setTimelineFiterSelectableOption("All Time");
 
-    // Set Default to "All Time"
-    setTimelineFiterSelectableOption("All Time")
-
-    $.map([
+  $.map(
+    [
       ".treatments-summary-tab-1-div-dropdown > .dropdown-list-2.w-dropdown-list",
       ".treatments-summary-tab-2-div-dropdown > .dropdown-list-2.w-dropdown-list",
-      ".treatments-summary-tab-3-div-dropdown > .dropdown-list-2.w-dropdown-list",
-    ], function(dom){
-      $(dom).html('')
-      $.map(defaultPossibleFilterableOption, function(filter){
+      ".treatments-summary-tab-3-div-dropdown > .dropdown-list-2.w-dropdown-list"
+    ],
+    function (dom) {
+      $(dom).html("");
+      $.map(defaultPossibleFilterableOption, function (filter) {
         $(dom).append(`
         <a 
         class="dropdown-link-3 w-dropdown-link" 
         onClick="loadTreatmentsByFilterListener('date', 'broadframe', '${filter.query}')"
         >${filter.option}</a>
-        `)
-      })
-
-    })
-    
-
+        `);
+      });
+    }
+  );
 
   const token = localStorage.getItem("token");
   const userData = JSON.parse(localStorage.getItem("data"));
@@ -77,13 +80,13 @@ $(document).ready(function () {
 
   // MAP POSSIBLE STATUSES TO POSITION
   const status = [
-    {name: "Completed", query: "isCompleted"},
-    {name: "Incomplete",  query: "isNotComplete"}, 
-    {name: "Pending",  query: "isPending"}, 
-    {name: "Unpaid",  query: "isNotPaid"} 
+    { name: "Completed", query: "isCompleted" },
+    { name: "Incomplete", query: "isNotComplete" },
+    { name: "Pending", query: "isPending" },
+    { name: "Unpaid", query: "isNotPaid" }
   ];
 
-  $(".status_data").html('')
+  $(".status_data").html("");
   $.map(status, function (statusData) {
     $(".status_data").append(`
     <a 
@@ -92,7 +95,7 @@ $(document).ready(function () {
     style="cursor: pointer"
     onClick="loadTreatmentsByFilterListener('status', '${statusData.query}', '${statusData.name}'); return false;"
     >${statusData.name}</a>`);
-  })
+  });
 
   const userfullname = userData.fullName;
   var firstName = userfullname.replace(/ .*/, "");
@@ -106,7 +109,7 @@ $(document).ready(function () {
   const dateoptions = {
     year: "2-digit",
     month: "2-digit",
-    day: "2-digit",
+    day: "2-digit"
   };
   // output  "12/08/18"
 
@@ -116,14 +119,14 @@ $(document).ready(function () {
     errorMessage.html(message);
     errorMessage.animate(
       {
-        top: "30px",
+        top: "30px"
       },
       900,
       "linear"
     );
     errorMessage.animate(
       {
-        top: "50px",
+        top: "50px"
       },
       900,
       "linear"
@@ -142,14 +145,14 @@ $(document).ready(function () {
     errorMessage.html(message);
     errorMessage.animate(
       {
-        top: "30px",
+        top: "30px"
       },
       900,
       "linear"
     );
     errorMessage.animate(
       {
-        top: "50px",
+        top: "50px"
       },
       900,
       "linear"
@@ -168,12 +171,16 @@ $(document).ready(function () {
   }
 
   function loadTreatmentsByFilter(type, value, extra) {
-    showSuccessMessageOnScreen($(".error-message"), "Updating Table, please wait..", false);
+    showSuccessMessageOnScreen(
+      $(".error-message"),
+      "Updating Table, please wait..",
+      false
+    );
 
     fetchTreatmentsByFilter(type, value, extra)
       .then(function (response) {
         hideAllScreenMessage();
-        console.log(response)
+        console.log(response);
         let treatment_list = response.data.listTreatments.data;
 
         console.log({ newList: treatment_list });
@@ -181,31 +188,35 @@ $(document).ready(function () {
         updateTreatmentTable(treatment_list);
       })
       .catch(function (error) {
-        showErrorMessageOnScreen($(".error-message"), "Unable to fetch treatments");
+        showErrorMessageOnScreen(
+          $(".error-message"),
+          "Unable to fetch treatments"
+        );
         console.error(error);
       });
   }
 
   function fetchTreatmentsByFilter(type, value, extra) {
     if (type == "patientId") {
-        //Set Value : Extra Value is sent as to Patient Name
-        $('.text-block-11').html(extra || "Patient Name")
-        // Reset Others 
-        $('.text-block-13').html("Status")
-        setTimelineFiterSelectableOption("All Time")
-        $("#filterByDateElement").attr("type", "text")
-        $("#filterByDateElement").val('')
+      //Set Value : Extra Value is sent as to Patient Name
+      $(".text-block-11").html(extra || "Patient Name");
+      // Reset Others
+      $(".text-block-13").html("Status");
+      setTimelineFiterSelectableOption("All Time");
+      $("#filterByDateElement").attr("type", "text");
+      $("#filterByDateElement").val("");
 
-
-        // Toggle Dropdown
-        $(".dropdown-list-2.w-dropdown-list.pat_list.w--open").removeClass("w--open")
+      // Toggle Dropdown
+      $(".dropdown-list-2.w-dropdown-list.pat_list.w--open").removeClass(
+        "w--open"
+      );
 
       return $.ajax({
         url: CONSTANTS.baseUrl,
         contentType: "application/json",
         type: "POST",
         headers: {
-          authorization: `Bearer ${JSON.parse(token)}`,
+          authorization: `Bearer ${JSON.parse(token)}`
         },
         data: JSON.stringify({
           query: `query{
@@ -242,39 +253,43 @@ $(document).ready(function () {
                       }
                   }
               }
-          `,
+          `
         }),
         success: function (result) {
           $(".treat_num").html(`${result.data.listTreatments.count}`);
           // Total Payout
-          $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
+          $(".total-payout").text(
+            `$${result.data.listTreatments.totalAmount.toFixed(2)}`
+          );
           // Appointments Count
-          $(".treatments-summary-tab-1-div-label-big").text(`${result.data.listAppointments.count}`);
+          $(".treatments-summary-tab-1-div-label-big").text(
+            `${result.data.listAppointments.count}`
+          );
           return Promise.resolve(result);
         },
         error: function (err) {
           return Promise.reject(err);
-        },
+        }
       });
-    } else if(type == "status"){
-      $('.text-block-13').html(extra || "Status")
-        // Reset Others 
-        $('.text-block-11').html("Patient Name")
-        setTimelineFiterSelectableOption("All Time")
-        $("#filterByDateElement").attr("type", "text")
-        $("#filterByDateElement").val('')
-
-
+    } else if (type == "status") {
+      $(".text-block-13").html(extra || "Status");
+      // Reset Others
+      $(".text-block-11").html("Patient Name");
+      setTimelineFiterSelectableOption("All Time");
+      $("#filterByDateElement").attr("type", "text");
+      $("#filterByDateElement").val("");
 
       // Toggle Dropdown
-      $(".dropdown-list-2.status_data.w-dropdown-list.w--open").removeClass("w--open")
+      $(".dropdown-list-2.status_data.w-dropdown-list.w--open").removeClass(
+        "w--open"
+      );
 
       return $.ajax({
         url: CONSTANTS.baseUrl,
         contentType: "application/json",
         type: "POST",
         headers: {
-          authorization: `Bearer ${JSON.parse(token)}`,
+          authorization: `Bearer ${JSON.parse(token)}`
         },
         data: JSON.stringify({
           query: `query{
@@ -311,57 +326,58 @@ $(document).ready(function () {
                       }
                   }
               }
-          `,
+          `
         }),
         success: function (result) {
           $(".treat_num").html(`${result.data.listTreatments.count}`);
           // Total Payout
-          $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
+          $(".total-payout").text(
+            `$${result.data.listTreatments.totalAmount.toFixed(2)}`
+          );
           // Appointments Count
-          $(".treatments-summary-tab-1-div-label-big").text(`${result.data.listAppointments.count}`);
+          $(".treatments-summary-tab-1-div-label-big").text(
+            `${result.data.listAppointments.count}`
+          );
           return Promise.resolve(result);
         },
         error: function (err) {
           return Promise.reject(err);
-        },
+        }
       });
-      
-    }else if(type == "date"){
-      let startDate
-      let endDate
+    } else if (type == "date") {
+      let startDate;
+      let endDate;
 
       function addDays(date, days) {
         var result = new Date(date);
         result.setDate(result.getDate() + days);
 
-        let month = '' + (result.getMonth() + 1);
-        let day = '' + result.getDate();
+        let month = "" + (result.getMonth() + 1);
+        let day = "" + result.getDate();
         let year = result.getFullYear();
 
-        if (month.length < 2) 
-            month = '0' + month;
-        if (day.length < 2) 
-            day = '0' + day;
+        if (month.length < 2) month = "0" + month;
+        if (day.length < 2) day = "0" + day;
 
-        return [month, day, year].join('-');
+        return [month, day, year].join("-");
       }
 
-      if(extra == "single"){
-        startDate = addDays(value, 0)
-        endDate = addDays(value, 1)
+      if (extra == "single") {
+        startDate = addDays(value, 0);
+        endDate = addDays(value, 1);
       }
-      // Reset Others 
-      $('.text-block-11').html("Patient Name")
-      $('.text-block-13').html("Status")
-      setTimelineFiterSelectableOption("All Time")
+      // Reset Others
+      $(".text-block-11").html("Patient Name");
+      $(".text-block-13").html("Status");
+      setTimelineFiterSelectableOption("All Time");
 
-      if(extra == "single"){
+      if (extra == "single") {
         return $.ajax({
           url: CONSTANTS.baseUrl,
           contentType: "application/json",
           type: "POST",
           headers: {
-            authorization: `Bearer ${JSON.parse(token)}`,
+            authorization: `Bearer ${JSON.parse(token)}`
           },
           data: JSON.stringify({
             query: `query{
@@ -399,59 +415,67 @@ $(document).ready(function () {
                         }
                     }
                 }
-            `,
+            `
           }),
           success: function (result) {
             $(".treat_num").html(`${result.data.listTreatments.count}`);
             // Total Payout
-            $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
+            $(".total-payout").text(
+              `$${result.data.listTreatments.totalAmount.toFixed(2)}`
+            );
             // Appointments Count
-            $(".treatments-summary-tab-1-div-label-big").text(`${result.data.listAppointments.count}`);
+            $(".treatments-summary-tab-1-div-label-big").text(
+              `${result.data.listAppointments.count}`
+            );
             return Promise.resolve(result);
           },
           error: function (err) {
             return Promise.reject(err);
-          },
-        });
-      }else {
-        $(".dropdown-list-2.w-dropdown-list.w--open").removeClass("w--open")
-
-        defaultPossibleFilterableOption.forEach(function(data){
-          if(data.query == extra){
-            setTimelineFiterSelectableOption(data.option)
           }
-        })
+        });
+      } else {
+        $(".dropdown-list-2.w-dropdown-list.w--open").removeClass("w--open");
 
-         // Reset Others 
-        $('.text-block-11').html("Patient Name")
-        $('.text-block-13').html("Status")
-        $("#filterByDateElement").attr("type", "text")
-        $("#filterByDateElement").val('')
+        defaultPossibleFilterableOption.forEach(function (data) {
+          if (data.query == extra) {
+            setTimelineFiterSelectableOption(data.option);
+          }
+        });
 
+        // Reset Others
+        $(".text-block-11").html("Patient Name");
+        $(".text-block-13").html("Status");
+        $("#filterByDateElement").attr("type", "text");
+        $("#filterByDateElement").val("");
 
+        let startDate;
+        let endDate;
 
-        let startDate
-        let endDate
-
-        if(extra == "month"){
-          const date = new Date()
-          startDate = addDays(new Date(date.getFullYear(), date.getMonth(), 1), 0)
-          endDate = addDays(new Date(date.getFullYear(), date.getMonth() + 1, 0), 0)
+        if (extra == "month") {
+          const date = new Date();
+          startDate = addDays(
+            new Date(date.getFullYear(), date.getMonth(), 1),
+            0
+          );
+          endDate = addDays(
+            new Date(date.getFullYear(), date.getMonth() + 1, 0),
+            0
+          );
         }
 
-        if(extra == "week"){
+        if (extra == "week") {
           const dt = new Date(); // current date of week
           const currentWeekDay = dt.getDay();
           const lessDays = currentWeekDay == 0 ? 6 : currentWeekDay - 1;
 
-          startDate = new Date(new Date(dt).setDate(dt.getDate() - lessDays))
-          endDate = new Date(new Date(startDate).setDate(startDate.getDate() + 6))
+          startDate = new Date(new Date(dt).setDate(dt.getDate() - lessDays));
+          endDate = new Date(
+            new Date(startDate).setDate(startDate.getDate() + 6)
+          );
 
-          startDate = addDays(startDate, 0)
-          endDate = addDays(endDate, 0)
-
+          startDate = addDays(startDate, 0);
+          endDate = addDays(endDate, 0);
         }
-
 
         return $.ajax({
           url: CONSTANTS.baseUrl,
@@ -459,7 +483,8 @@ $(document).ready(function () {
           type: "POST",
           headers: { authorization: `Bearer ${JSON.parse(token)}` },
           data: JSON.stringify({
-            query: startDate ? `query {
+            query: startDate
+              ? `query {
                         listTreatments(
                             limit: 20,
                             lastId: "",
@@ -497,7 +522,8 @@ $(document).ready(function () {
                           count
                         }
                     }
-                      `: `
+                      `
+              : `
                       query {
                         listTreatments(
                             limit: 20
@@ -534,31 +560,30 @@ $(document).ready(function () {
                           count
                         }
                     }
-                      `,
+                      `
           }),
           success: function (result) {
-            console.log(result)
-      
+            console.log(result);
+
             $(".treat_num").html(`${result.data.listTreatments.count}`);
             // Total Payout
-            $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
+            $(".total-payout").text(
+              `$${result.data.listTreatments.totalAmount.toFixed(2)}`
+            );
             // Appointments Count
-            $(".treatments-summary-tab-1-div-label-big").text(`${result.data.listAppointments.count}`);
+            $(".treatments-summary-tab-1-div-label-big").text(
+              `${result.data.listAppointments.count}`
+            );
 
             return Promise.resolve(result);
           },
           error: function (err) {
             console.log(err);
             return Promise.reject(err);
-
-          },
+          }
         });
       }
-
-
-
-
-    }else{
+    } else {
       // Pass: Temp!
     }
   }
@@ -569,7 +594,10 @@ $(document).ready(function () {
 
     $(".treatment_list_table").after(
       $.map(treatment_list, function (data) {
-        const date_treat = new Date(Number(data.createdAt)).toLocaleDateString("en-US", dateoptions);
+        const date_treat = new Date(Number(data.createdAt)).toLocaleDateString(
+          "en-US",
+          dateoptions
+        );
         var feenum = data.grandTotal - data.subTotal;
         var nfee = data.grandTotal.toFixed(2);
 
@@ -577,10 +605,11 @@ $(document).ready(function () {
                   <div class="treatments-dashboard-table-row-5">
                   <div class="treatments-dashboard-table-row-5-block-1">
                       <div class="treatments-dashboard-table-row-5-label">
-                      ${data.isPaid ? 
-                        `<a href="/care-giver/view-treatment.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>` 
-                        : 
-                        `<a href="/care-giver/treatment-details-payment.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>`}
+                      ${
+                        data.isPaid
+                          ? `<a href="/care-giver/view-treatment.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>`
+                          : `<a href="/care-giver/treatment-details-payment.html?treatment_id=${data.id}&hcp_id=${data.healthcareProviderId}">${data.patient.fullName}</a>`
+                      }
                           
                       </div>
                   </div>
@@ -588,7 +617,9 @@ $(document).ready(function () {
                       <div class="treatments-dashboard-table-row-5-label">${date_treat}</div>
                   </div>
                   <div class="treatments-dashboard-table-row-5-block-3">
-                      <div class="treatments-dashboard-table-row-5-label">${data.healthcareProvider}</div>
+                      <div class="treatments-dashboard-table-row-5-label">${
+                        data.healthcareProvider
+                      }</div>
                   </div>
                   <div id="w-node-f6533b15-1108-ca7c-8368-91a6c7143562-f6900c70" class="treatments-dashboard-table-row-5-block-4">
                       <div data-hover="" data-delay="20" class="w-dropdown">
@@ -598,12 +629,16 @@ $(document).ready(function () {
                               <div class="icon-27 w-icon-dropdown-toggle"></div>
                               <div>View</div>
                           </div>
-                          <nav class="dropdown-list-3 w-dropdown-list ${data.id}-show" id="w-dropdown-list-10" aria-labelledby="w-dropdown-toggle-10">
+                          <nav class="dropdown-list-3 w-dropdown-list ${
+                            data.id
+                          }-show" id="w-dropdown-list-10" aria-labelledby="w-dropdown-toggle-10">
                               <div class="div-block-143">
                                   <a href="#" class="table-dropdown-link-3 w-dropdown-link" tabindex="0">Treatment</a>
                                   <div class="table-dropdown-link-3-sub">$1400</div>
                               </div>
-                              ${$.map(data.treatmentItems, function (treat_data) {
+                              ${$.map(data.treatmentItems, function (
+                                treat_data
+                              ) {
                                 `<div class="div-block-143">
                                       <a href="#" class="table-dropdown-link-3-plain w-dropdown-link" tabindex="0">${treat_data.name}</a>
                                       <div class="table-dropdown-link-3-plain-sub">$${treat_data.price}.00</div>
@@ -618,18 +653,18 @@ $(document).ready(function () {
                   </div>
                   <div id="w-node-f6533b15-1108-ca7c-8368-91a6c7143572-f6900c70" class="treatments-dashboard-table-row-3-block-6">
                           ${
-                        data.isPaid
-                          ? `${
-                              data.isAccepted
-                                ? `${
-                                    data.isCompleted
-                                      ? `<a href="#" class="treatments-dashboard-table-row-5-button w-button">COMPLETED</a>`
-                                      : `<a href="#" class="treatments-dashboard-table-row-5-button w-button">ACCEPTED</a>`
-                                  }`
-                                : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">PENDING</a>`
-                            }`
-                          : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">UNPAID</a>`
-                      }
+                            data.isPaid
+                              ? `${
+                                  data.isAccepted
+                                    ? `${
+                                        data.isCompleted
+                                          ? `<a href="#" class="treatments-dashboard-table-row-5-button w-button">COMPLETED</a>`
+                                          : `<a href="#" class="treatments-dashboard-table-row-5-button w-button">ACCEPTED</a>`
+                                      }`
+                                    : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">PENDING</a>`
+                                }`
+                              : `<a href="#" class="treatments-dashboard-table-row-3-button w-button">UNPAID</a>`
+                          }
                   </div>
               </div>
               `;
@@ -695,7 +730,7 @@ $(document).ready(function () {
                     count
                   }
               }
-                `,
+                `
     }),
     success: function (result) {
       console.log(result);
@@ -731,9 +766,13 @@ $(document).ready(function () {
       updateTreatmentTable(treatment_list);
 
       // Total Payout
-      $(".total-payout").text(`$${result.data.listTreatments.totalAmount.toFixed(2)}`);
+      $(".total-payout").text(
+        `$${result.data.listTreatments.totalAmount.toFixed(2)}`
+      );
       // Appointments Count
-      $(".treatments-summary-tab-1-div-label-big").text(`${result.data.listAppointments.count}`);
+      $(".treatments-summary-tab-1-div-label-big").text(
+        `${result.data.listAppointments.count}`
+      );
       $(".w-dropdown").on("click", ".dropdown-toggle-4", function () {
         var className = $(this).attr("class");
         var keyName = $(this).attr("key");
@@ -744,7 +783,7 @@ $(document).ready(function () {
     },
     error: function (err) {
       console.log(err);
-    },
+    }
   });
   /*$(".dropdown-toggle-4").click(function() {
 var className = $(this).attr("class");   
